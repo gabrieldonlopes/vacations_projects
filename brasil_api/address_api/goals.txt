@@ -1,5 +1,0 @@
-objetivo principal: 
-- Construir uma interface web simples que utiliza a BrasilApi para descobrir a cidade/região colocada baseando-se no CEP
-
-objetivo adicional:
-- comparar a distância e tempo de viagem da localização do usuario com a localização inserida
