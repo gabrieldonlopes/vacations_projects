@@ -1,0 +1,109 @@
+Exemplos de CEPs:
+Região Sudeste
+01001-000 (São Paulo - SP)
+01002-000 (São Paulo - SP)
+20010-000 (Rio de Janeiro - RJ)
+20020-000 (Rio de Janeiro - RJ)
+30110-000 (Belo Horizonte - MG)
+30120-000 (Belo Horizonte - MG)
+40010-000 (Vitória - ES)
+40020-000 (Vitória - ES)
+Região Sul
+80010-000 (Curitiba - PR)
+80020-000 (Curitiba - PR)
+90010-000 (Porto Alegre - RS)
+90020-000 (Porto Alegre - RS)
+88010-000 (Florianópolis - SC)
+88020-000 (Florianópolis - SC)
+Região Nordeste
+40010-000 (Salvador - BA)
+40020-000 (Salvador - BA)
+50010-000 (Recife - PE)
+50020-000 (Recife - PE)
+60010-000 (Fortaleza - CE)
+60020-000 (Fortaleza - CE)
+58010-000 (João Pessoa - PB)
+58020-000 (João Pessoa - PB)
+49010-000 (Aracaju - SE)
+49020-000 (Aracaju - SE)
+57010-000 (Maceió - AL)
+57020-000 (Maceió - AL)
+59010-000 (Natal - RN)
+59020-000 (Natal - RN)
+64010-000 (Teresina - PI)
+64020-000 (Teresina - PI)
+49000-000 (Itabaiana - SE)
+Região Centro-Oeste
+70040-000 (Brasília - DF)
+70050-000 (Brasília - DF)
+74010-000 (Goiânia - GO)
+74020-000 (Goiânia - GO)
+78010-000 (Cuiabá - MT)
+78020-000 (Cuiabá - MT)
+79010-000 (Campo Grande - MS)
+79020-000 (Campo Grande - MS)
+Região Norte
+66010-000 (Belém - PA)
+66020-000 (Belém - PA)
+69010-000 (Manaus - AM)
+69020-000 (Manaus - AM)
+76800-000 (Porto Velho - RO)
+76801-000 (Porto Velho - RO)
+69301-000 (Boa Vista - RR)
+69302-000 (Boa Vista - RR)
+77001-000 (Palmas - TO)
+77002-000 (Palmas - TO)
+68901-000 (Macapá - AP)
+68902-000 (Macapá - AP)
+69800-000 (Coari - AM)
+69801-000 (Tefé - AM)
+Interior e Municípios Menores
+36010-000 (Juiz de Fora - MG)
+37540-000 (Itajubá - MG)
+44001-000 (Feira de Santana - BA)
+45000-000 (Vitória da Conquista - BA)
+49000-000 (Aracaju - SE)
+58000-000 (Campina Grande - PB)
+64000-000 (Parnaíba - PI)
+65000-000 (São Luís - MA)
+66000-000 (Marabá - PA)
+67000-000 (Ananindeua - PA)
+68000-000 (Santarém - PA)
+69000-000 (Itacoatiara - AM)
+70000-000 (Taguatinga - DF)
+Expansão para Diversos Estados
+76820-000 (Ariquemes - RO)
+78048-000 (Sinop - MT)
+79022-000 (Dourados - MS)
+80030-000 (Londrina - PR)
+85000-000 (Ponta Grossa - PR)
+87000-000 (Maringá - PR)
+88030-000 (Blumenau - SC)
+89010-000 (Joinville - SC)
+89200-000 (Chapecó - SC)
+90030-000 (Caxias do Sul - RS)
+90610-000 (Pelotas - RS)
+93000-000 (Novo Hamburgo - RS)
+Municípios Menores ou Exemplos Aleatórios
+01010-001
+21010-002
+71010-003
+81010-004
+91010-005
+25010-006
+35010-007
+41010-008
+51010-009
+61010-010
+41001-001
+30002-002
+24010-003
+13010-004
+32010-005
+33010-006
+35010-007
+36010-008
+37010-009
+38010-010
+29010-001
+29020-002
