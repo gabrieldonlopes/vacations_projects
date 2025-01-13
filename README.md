@@ -1,5 +1,9 @@
-# vacations_projects
-projetos de aprendizado web para prática de conceitos a serem aplicados no TCC
+## vacations_projects
+
+O principal intuito deste projeto é construir pequenos projetos web para prática de conceitos a serem aplicados no TCC e integrados num futuro portifólio. 
+Por isso as principais tecnologias utilizadas são FastApi (backend) e React (frontend) além de uma variedade de APIs externas.
+## Configuração: 
+- É necessário configurar o arquivo `.venv` antes de rodar a aplicação.
 
 ## Tarefas Pendentes (TODO)
 
@@ -13,3 +17,5 @@ projetos de aprendizado web para prática de conceitos a serem aplicados no TCC
 ## Concluído
 
 - [x] Plataforma de pesquisa de cidade via CEP
+
+
