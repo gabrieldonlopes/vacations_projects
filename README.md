@@ -1,4 +1,4 @@
-## vacations_projects
+# vacations_projects
 
 O principal intuito deste projeto é construir pequenos projetos web para prática de conceitos a serem aplicados no TCC e integrados num futuro portifólio. 
 Por isso as principais tecnologias utilizadas são FastApi (backend) e React (frontend) além de uma variedade de APIs externas.
