@@ -7,7 +7,6 @@ Por isso as principais tecnologias utilizadas são FastApi (backend) e React (fr
 
 ## Tarefas Pendentes (TODO)
 
-- [ ] Painel de Monitoramento Climático
 - [ ] Portal de Recomendação de Filmes
 - [ ] Portal de Visualização de Dados Públicos
 - [ ] Plataforma de Compartilhamento de Livros
@@ -17,5 +16,6 @@ Por isso as principais tecnologias utilizadas são FastApi (backend) e React (fr
 ## Concluído
 
 - [x] Plataforma de pesquisa de cidade via CEP
+- [x] Painel de Monitoramento Climático
 
 

@@ -8,7 +8,8 @@ from data_handle import data_handle, Location, WeatherForecast
 app = FastAPI()
 
 origins = [
-    "http://api.weatherapi.com/v1/forecast.json"
+    "http://api.weatherapi.com/v1/forecast.json",
+    "http://localhost:5173"
 ]
 api_key = "356bd35e90fe467483b00924251301"
 
