@@ -2,7 +2,7 @@ import pandas as pd
 from pydantic import BaseModel
 from typing import List
 
-# models para tratamento e veriificação de dados
+# schema para tratamento e veriificação de dados
 class WeatherForecast(BaseModel):
     date: str
     day_maxtemp_c: float
