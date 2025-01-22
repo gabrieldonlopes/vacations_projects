@@ -7,19 +7,6 @@ from ..bookShelf.bookShelf_handler import search_book_shelf
 
 router = APIRouter()
 
-BASE_URL = "https://www.googleapis.com/books/v1/volumes"
-
-API_KEY = "AIzaSyCCldi_nevsZ2hEjc2wjCvugcclkPXweYA"
-
-filter_q = input("Digite o termo de busca: ").strip()
-params = {
-    "q": filter_q,
-    "orderBy": "relevance",
-    "projection": "full",
-    "maxResults": 20,
-    "key": API_KEY
-}
-
 @router.get("/search/{search_term}",response_model=SearchBookShelf)
 def search_book_shelf(search_term: str):
     try:

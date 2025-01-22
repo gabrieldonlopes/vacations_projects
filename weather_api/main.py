@@ -5,13 +5,17 @@ from  fastapi.middleware.cors import CORSMiddleware
 import requests as req
 from data_handle import data_handle, Location, WeatherForecast
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 app = FastAPI()
 
 origins = [
     "http://api.weatherapi.com/v1/forecast.json",
     "http://localhost:5173"
 ]
-api_key = "356bd35e90fe467483b00924251301"
+api_key = os.getenv("WEATHER_API_KEY")
 
 # controla quem tem acesso a API
 app.add_middleware(
