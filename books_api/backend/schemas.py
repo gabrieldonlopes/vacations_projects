@@ -1,0 +1,48 @@
+from pydantic import BaseModel
+from typing import List, Optional
+
+# Authentication Schemas
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: str | None = None
+
+
+class UserCreate(BaseModel):
+    username: str
+    email: str
+    password: str
+
+class UserResponse(BaseModel):
+    username: str
+    email: str | None = None
+
+class UserInDB(UserResponse):
+    hashed_password: str
+
+# Book Schemas
+class SearchBookSchema(BaseModel):
+    id: str
+    selfLink: str
+    volumeInfo_title: str
+    volumeInfo_authors: List[str]
+    volumeInfo_pageCount: Optional[int]
+    volumeInfo_imageLinks_thumbnail: Optional[str]
+    volumeInfo_averageRating: Optional[str]
+    volumeInfo_language: Optional[str]
+
+class BookSchema(BaseModel):
+    title: str
+    authors: List[str]
+    publisher: Optional[str]
+    publishedDate: Optional[str]
+    description: Optional[str]
+    pageCount: Optional[int]
+    categories: List[str]
+    imageLinks_large: Optional[str]
+    language: Optional[str]
+    industryIdentifiers: List[dict]
+
