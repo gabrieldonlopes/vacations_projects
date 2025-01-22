@@ -1,30 +1,46 @@
 import requests as req
 import pandas as pd
 
+BASE_URL = "https://www.googleapis.com/books/v1/volumes"
 
- 
-def test_search(target_book):
-    origins = [
-        "https://openlibrary.org/search.json"
+API_KEY = "AIzaSyCCldi_nevsZ2hEjc2wjCvugcclkPXweYA"
+
+filter_q = input("Digite o termo de busca: ").strip()
+params = {
+    "q": filter_q,
+    "orderBy": "relevance",
+    "projection": "full",
+    "maxResults": 20,
+    "key": API_KEY
+}
+
+response = req.get(BASE_URL, params=params)
+
+if response.status_code != 200:
+    print(f"Erro na solicitação: {response.status_code}")
+    print(response.json().get("error", {}).get("message", "Erro desconhecido"))
+    exit()
+
+try:
+    response_data = response.json()
+    if "items" not in response_data:
+        print("Nenhum livro encontrado para o termo de busca.")
+        exit()
+
+    items = pd.json_normalize(response_data["items"], sep="_")
+
+    select_data = [
+        "id","selfLink",
+        "volumeInfo_title", "volumeInfo_authors","volumeInfo_pageCount"
+        "volumeInfo_imageLinks_thumbnail", "volumeInfo_averageRating", "volumeInfo_language"
     ]
-    response = req.get(f"{origins[0]}?q={target_book}").json()
 
-    data = pd.json_normalize(response['docs'], sep='_')
 
-    expected_columns = [
-        "title", "author_name", "author_key", "first_publish_year",
-        "number_of_pages_median", "cover_edition_key", "isbn", "seed"
-    ]
+    filtered_data = items.reindex(columns=select_data, fill_value="N/A")
 
-    for col in expected_columns:
-        if col not in data.columns:
-            data[col] = None 
+    output_file = f"./books_api/tests_api/{filter_q}_data.csv"
+    filtered_data.to_csv(output_file, index=False)
+    print(f"Dados salvos em: {output_file}")
 
-    data = data[expected_columns]
-
-    data["isbn"] = data["isbn"].apply(lambda x: x[0:1] if isinstance(x, list) and len(x) > 0 else None)
-    data["seed"] = data["seed"].apply(lambda x: x[0:1] if isinstance(x, list) and len(x) > 0 else None)
-
-    data.to_csv(f'./books_api/tests_api/{target_book}_data.csv', index=False)
-
-    return data["title"], data["cover_edition_key"]
+except Exception as e:
+    print(f"Erro ao processar os dados: {e}")
