@@ -1,15 +1,13 @@
 from pydantic import BaseModel
 from typing import List, Optional
-
 class SearchBookSchema(BaseModel):
     id: str
-    selfLink: str
     volumeInfo_title: str
-    volumeInfo_authors: List[str]
-    volumeInfo_pageCount: Optional[int]
-    volumeInfo_imageLinks_thumbnail: Optional[str]
-    volumeInfo_averageRating: Optional[str]
-    volumeInfo_language: Optional[str]
+    volumeInfo_authors: Optional[List[str]] = None
+    volumeInfo_pageCount: Optional[int] = None
+    volumeInfo_imageLinks_thumbnail: Optional[str] = None
+    volumeInfo_averageRating: Optional[float] = None
+    volumeInfo_language: Optional[str] = None
 
 class BookSchema(BaseModel):
     title: str

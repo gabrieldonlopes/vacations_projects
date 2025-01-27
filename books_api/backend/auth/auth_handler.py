@@ -7,9 +7,9 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.orm import Session
 
-from ..database import get_db
-from ..schemas import TokenData
-from ..models import User
+from backend.database import get_db
+from backend.schemas import TokenData
+from backend.models import User
 
 # to get a string like this run:
 # openssl rand -hex 32

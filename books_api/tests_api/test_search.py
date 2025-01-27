@@ -30,10 +30,10 @@ try:
     items = pd.json_normalize(response_data["items"], sep="_")
 
     select_data = [
-        "id","selfLink",
-        "volumeInfo_title", "volumeInfo_authors","volumeInfo_pageCount"
-        "volumeInfo_imageLinks_thumbnail", "volumeInfo_averageRating", "volumeInfo_language"
-    ]
+            "id",
+            "volumeInfo_title", "volumeInfo_authors","volumeInfo_pageCount",
+            "volumeInfo_imageLinks_thumbnail", "volumeInfo_averageRating", "volumeInfo_language"
+        ]
 
 
     filtered_data = items.reindex(columns=select_data, fill_value="N/A")

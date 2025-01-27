@@ -26,13 +26,13 @@ class UserInDB(UserResponse):
 # Book Schemas
 class SearchBookSchema(BaseModel):
     id: str
-    selfLink: str
     volumeInfo_title: str
     volumeInfo_authors: List[str]
     volumeInfo_pageCount: Optional[int]
-    volumeInfo_imageLinks_thumbnail: Optional[str]
-    volumeInfo_averageRating: Optional[str]
+    volumeInfo_imageLinks_thumbnail: Optional[str] | None
+    volumeInfo_averageRating: Optional[float]
     volumeInfo_language: Optional[str]
+
 
 class BookSchema(BaseModel):
     title: str
@@ -44,5 +44,5 @@ class BookSchema(BaseModel):
     categories: List[str]
     imageLinks_large: Optional[str]
     language: Optional[str]
-    industryIdentifiers: List[dict]
+    industryIdentifiers: Optional[List[dict]]
 
