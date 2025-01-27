@@ -34,6 +34,9 @@ def get_user(db: Session, username: str):
     db_user = db.query(User).filter(User.username == username).first()
     return db_user
 
+def get_user_by_email(db: Session, email: str):
+    db_user = db.query(User).filter(User.email == email).first()
+    return db_user
 
 def authenticate_user(db: Session, username: str, password: str):
     user = get_user(db, username)

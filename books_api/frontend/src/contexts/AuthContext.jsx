@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser, fetchUserProfile, registerUser } from '../api.js';
+import { toast } from "react-toastify";
 
 const AuthContext = createContext({});
 
@@ -20,19 +21,28 @@ const AuthProvider = ({ children }) => {
     }, [token]);
 
     const login = async (username, password) => {
-        const response = await loginUser({ username, password });
-        if (response?.access_token) {
-            setToken(response.access_token);
-            localStorage.setItem('token', response.access_token);
-            const userProfile = await fetchUserProfile(response.access_token);
-            setUser(userProfile);
-            navigate('/profile');
+        try {
+            const response = await loginUser({ username, password });
+            if (response?.access_token) {
+                setToken(response.access_token);
+                localStorage.setItem('token', response.access_token);
+                const userProfile = await fetchUserProfile(response.access_token);
+                setUser(userProfile);
+                navigate('/search');
+            }
+        } catch (error) {
+            toast.error(error.message);
         }
+        
     };
 
     const register = async (username, email, password) => {
-        await registerUser({ username, email, password });
-        navigate('/login');
+        try {
+            await registerUser({ username, email, password });
+            navigate('/search');
+        } catch (error) {
+            toast.error(error.message);
+        }
     };
 
     const logout = () => {

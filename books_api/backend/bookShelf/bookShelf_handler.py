@@ -69,9 +69,10 @@ def get_book(id : str) -> BookSchema:
 
     data = response.json()
     volume_info = data.get("volumeInfo", {})
-
+    id_info = data.get("id", "N/A")
     #TODO: mudar esse modelo de dados
     book_data = {
+        "id": id_info,
         "title": volume_info.get("title", "N/A"),
         "authors": volume_info.get("authors", []),
         "publisher": volume_info.get("publisher", "N/A"),

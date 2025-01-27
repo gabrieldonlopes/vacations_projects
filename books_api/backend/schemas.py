@@ -35,6 +35,7 @@ class SearchBookSchema(BaseModel):
 
 
 class BookSchema(BaseModel):
+    id: str
     title: str
     authors: List[str]
     publisher: Optional[str]
@@ -46,3 +47,6 @@ class BookSchema(BaseModel):
     language: Optional[str]
     industryIdentifiers: Optional[List[dict]]
 
+class BookShelfSchema(BaseModel):
+    user_id: int
+    book_id: str

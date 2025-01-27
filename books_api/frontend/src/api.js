@@ -20,8 +20,8 @@ const loginUser = async (credentials) => {
         );
         return response.data;
     } catch (error) {
-        console.error("Login error:", error);
-        throw error;
+        const errorMessage = error.response?.data?.detail || "Erro ao registrar usuário.";
+        throw new Error(errorMessage); 
     }
 };
 
@@ -29,8 +29,8 @@ const registerUser = async (userData) => {
     try {
         await axios.post(`${API_URL}/auth/register`, userData);
     } catch (error) {
-        console.error("Registration error:", error);
-        throw error;
+        const errorMessage = error.response?.data?.detail || "Erro ao registrar usuário.";
+        throw new Error(errorMessage); 
     }
 };
 
@@ -44,6 +44,16 @@ const fetchUserProfile = async (token) => {
         return response.data;
     } catch (error) {
         console.error("Fetch user profile error:", error);
+        throw error;
+    }
+};
+
+const search_book_shelf = async (search_term) => {
+    try {
+        const response = await axios.get(`${API_URL}/books/search/${search_term}`);
+        return response.data;
+    } catch (error) {
+        console.error("Search book shelf error:", error);
         throw error;
     }
 };
