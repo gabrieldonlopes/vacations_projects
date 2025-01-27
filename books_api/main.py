@@ -2,8 +2,6 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-
-
 from backend.routers import auth
 from backend.routers import user
 from backend.routers import bookShelf
@@ -11,9 +9,8 @@ from backend.routers import bookShelf
 app = FastAPI(debug=True)
 
 origins = [
-    "http://localhost:5174",
+    "http://localhost:5173",
     "https://www.googleapis.com/books/v1/volumes"
-    # Add more origins here
 ]
 
 app.add_middleware(
