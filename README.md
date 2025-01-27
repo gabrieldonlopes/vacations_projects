@@ -9,7 +9,7 @@ Por isso as principais tecnologias utilizadas são FastApi (backend) e React (fr
 
 - [ ] Portal de Recomendação de Filmes
 - [ ] Portal de Visualização de Dados Públicos
-- [ ] Plataforma de Leitura e Gerenciamento de Estantes de livross
+- [ ] Plataforma de Leitura e Gerenciamento de Estantes de livros
 - [ ] MarketPlace de produtos artesanais
 
 
