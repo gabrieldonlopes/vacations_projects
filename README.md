@@ -4,7 +4,7 @@ O principal intuito deste projeto é construir pequenos projetos web para práti
 Por isso as principais tecnologias utilizadas são FastApi (backend) e React (frontend) além de uma variedade de APIs externas.
 ## Configuração: 
 - É necessário configurar o arquivo `.venv` antes de rodar a aplicação.
-
+- É necessário obter chaves de API para alguns dos projetos, adiciona-las num arquivo `.env`
 ## Tarefas Pendentes (TODO)
 
 - [ ] Portal de Recomendação de Filmes
