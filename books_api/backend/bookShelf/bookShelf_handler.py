@@ -23,7 +23,7 @@ def search_book_shelf(search_term: str) -> List[SearchBookSchema]:
         "q": filter_q,
         "orderBy": "relevance",
         "projection": "full",
-        "maxResults": 20,
+        "maxResults": 40,
         "key": API_KEY
     }
 

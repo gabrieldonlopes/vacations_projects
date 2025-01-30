@@ -61,7 +61,7 @@ const search_book = async (search_term) => {
 };
 const add_book_shelf = async (book_id) => {
     try {
-        const response = await axios.post(`${API_URL}/books/add`, { book_id });
+        const response = await axios.post(`${API_URL}/bookshelf/book/add`, { book_id });
         return response.data;
     } catch (error) {
         console.error("Add book to bookshelf error:", error);
@@ -70,7 +70,7 @@ const add_book_shelf = async (book_id) => {
 };
 const remove_book_shelf = async (user_id,book_id) => {
     try {
-        const response = await axios.post(`${API_URL}/books/remove`,{ user_id }, { book_id });
+        const response = await axios.post(`${API_URL}/bookshelf/book/remove`,{ user_id }, { book_id });
         return response.data;
     } catch (error) {
         console.error("Remove book from bookshelf error:", error);
@@ -79,7 +79,7 @@ const remove_book_shelf = async (user_id,book_id) => {
 }
 const get_book = async (book_id) => {
     try {
-        const response = await axios.get(`${API_URL}/books/${book_id}`);
+        const response = await axios.get(`${API_URL}/bookshelf/book/${book_id}`);
         return response.data;
     } catch (error) {
         console.error("Get book error:", error);
