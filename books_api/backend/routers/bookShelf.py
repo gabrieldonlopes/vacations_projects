@@ -51,3 +51,14 @@ def get_bookshelf(user_id: int, db: Session = Depends(get_db)):
         raise http_ex
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.delete("/bookshelf/{user_id}/{book_id}")
+def delete_book_from_shelf(user_id: int, book_id: str, db: Session = Depends(get_db)):
+    try:
+        db.query(BookShelfSchema).filter(BookShelfSchema.user_id == user_id, BookShelfSchema.book_id == book_id).delete()
+        db.commit()
+        return 
+    except HTTPException as http_ex:
+        raise http_ex
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
