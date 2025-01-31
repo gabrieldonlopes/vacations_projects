@@ -33,7 +33,6 @@ class SearchBookSchema(BaseModel):
     volumeInfo_averageRating: Optional[float]
     volumeInfo_language: Optional[str]
 
-
 class BookSchema(BaseModel):
     id: str
     title: str
@@ -47,6 +46,41 @@ class BookSchema(BaseModel):
     language: Optional[str]
     industryIdentifiers: Optional[List[dict]]
 
-class BookShelfSchema(BaseModel):
-    user_id: int
+class BookSavedSchema(BaseModel): # tira necessidade de fazer uma chamada da api
+    saved_book_id: int
     book_id: str
+    book_title: str
+    book_thumbnail: str # TODO: adicionar uma forma de pegar a url da imagem exemplo. caso não haja thumbnail, usar um default
+    class Config:
+        from_attributes = True
+class ListSchema(BaseModel):
+    list_id: int
+    owner_user_id: int
+    name: str
+    description: Optional[str]
+    likes: int
+    visibility: bool
+    books: List[BookSavedSchema]
+    class Config:
+        from_attributes = True
+
+class ListCreate(BaseModel):
+    owner_user_id: int
+    name: str
+    description: Optional[str]
+    visibility: bool
+
+class ListSave(BaseModel):
+    list_id: int
+    user_id: int
+
+class ListResponse(BaseModel):
+    list_id: int
+    name: str
+    description: Optional[str]
+    thumbnail: Optional[List[str]]
+    visibility: bool
+
+class Comment(BaseModel):
+    user_id: int
+    comment: str
