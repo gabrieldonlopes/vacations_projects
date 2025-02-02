@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, fetchUserProfile, registerUser } from '../api.js';
+import { loginUser, fetchUserProfile, registerUser } from '../api/api_auth.js';
 import { toast } from "react-toastify";
 
 const AuthContext = createContext({});

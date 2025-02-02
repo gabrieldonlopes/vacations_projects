@@ -5,9 +5,9 @@ from sqlalchemy.future import select
 
 from backend.database import get_db
 from backend.models import BookList, BookSaved, SavedLists
-from backend.schemas import ListSchema, BookSavedSchema, ListCreate, ListResponse,Comment
+from backend.schemas import ListSchema, BookSavedSchema, ListCreate, ListPreview
 
-async def transform_list_to_list_response(list_obj: ListSchema, db: AsyncSession) -> ListResponse:
+async def transform_list_to_list_response(list_obj: ListSchema, db: AsyncSession) -> ListPreview:
     list_id = list_obj.id
     list_name = list_obj.name
     list_description = list_obj.description
@@ -15,22 +15,27 @@ async def transform_list_to_list_response(list_obj: ListSchema, db: AsyncSession
     
     list_thumbnail = [book.book_thumbnail for book in await get_saved_books_for_list(list_id, db) if book.book_thumbnail][0:4]
     
-    return ListResponse(
+    return ListPreview(
         list_id=list_id, name=list_name, description=list_description, 
         thumbnail=list_thumbnail, visibility=list_visibility
     )
+
+async def get_list(list_id: int, db: AsyncSession = Depends(get_db)) -> ListSchema:
+    result = await db.execute(select(BookList).filter(BookList.id == list_id))
+    list_obj = result.scalars().first()
+    return list_obj
 
 async def get_saved_books_for_list(list_id: int, db: AsyncSession = Depends(get_db)) -> List[BookSavedSchema]:
     result = await db.execute(select(BookSaved).filter(BookSaved.book_list_id == list_id))
     books = result.scalars().all()
     return [BookSavedSchema.model_validate(book) for book in books]
 
-async def get_lists_for_user(user_id: int, db: AsyncSession = Depends(get_db)) -> List[ListResponse]:
+async def get_lists_for_user(user_id: int, db: AsyncSession = Depends(get_db)) -> List[ListPreview]:
     result = await db.execute(select(BookList).filter(BookList.owner_user_id == user_id))
     lists = result.scalars().all()
     return [await transform_list_to_list_response(list_obj, db) for list_obj in lists]
 
-async def get_lists_for_book(saved_book_id: int, db: AsyncSession = Depends(get_db)) -> List[ListResponse]:
+async def get_lists_for_book(saved_book_id: int, db: AsyncSession = Depends(get_db)) -> List[ListPreview]:
     book = await db.get(BookSaved, saved_book_id)
     if not book:
         return []
@@ -38,7 +43,7 @@ async def get_lists_for_book(saved_book_id: int, db: AsyncSession = Depends(get_
     lists = result.scalars().all()
     return [await transform_list_to_list_response(list_obj, db) for list_obj in lists]
 
-async def get_saved_lists(user_id: int, db: AsyncSession = Depends(get_db)) -> List[ListResponse]:
+async def get_saved_lists(user_id: int, db: AsyncSession = Depends(get_db)) -> List[ListPreview]:
     result = await db.execute(select(SavedLists).filter(SavedLists.user_id == user_id))
     lists = result.scalars().all()
     return [await transform_list_to_list_response(list_obj, db) for list_obj in lists]
@@ -84,9 +89,9 @@ async def add_book_to_list(list_id: int, book: BookSavedSchema, db: AsyncSession
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-async def delete_book_from_list(list_id: int,saved_book_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_book_from_list(list_id: int, book_id: int, db: AsyncSession = Depends(get_db)):
     try:
-        book = await db.get(BookSaved, saved_book_id)
+        book = await db.get(BookSaved, book_id)
         if not book or book.book_list_id != list_id:
             raise HTTPException(status_code=404, detail="Book not found.")
         
@@ -95,26 +100,3 @@ async def delete_book_from_list(list_id: int,saved_book_id: int, db: AsyncSessio
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-async def comment_on_list (comment: Comment, db: AsyncSession = Depends(get_db)):
-    try:
-        db_comment = Comment(list_id=comment.list_id, user_id=comment.user_id, comment=comment.comment)
-        db.add(db_comment)
-        await db.commit()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-async def get_comments_for_list(list_id: int, db: AsyncSession = Depends(get_db)) -> List[Comment]:
-    result = await db.execute(select(Comment).filter(Comment.list_id == list_id))
-    comments = result.scalars().all()
-    return comments
-
-async def delete_comment(comment_id: int, db: AsyncSession = Depends(get_db)):
-    try:
-        comment = await db.get(Comment, comment_id)
-        if not comment:
-            raise HTTPException(status_code=404, detail="Comment not found.")
-        
-        await db.delete(comment)
-        await db.commit()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))

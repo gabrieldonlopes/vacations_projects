@@ -43,17 +43,28 @@ class BookSaved(Base): # essa tabela serve para guardar os livros salvos em uma 
 
     saved_book_id = Column(Integer, primary_key=True, index=True)
     book_list_id = Column(Integer, ForeignKey("bookLists.list_id"), primary_key=True, index=True)
-    book_id = Column(Integer, index=True)
+    book_id = Column(String, index=True)
     book_title = Column(String, index=True)
     book_thumbnail = Column(String, index=True)
 
     booklist = relationship("BookList", back_populates="booksaved")
     
-class Comment(Base):
-    __tablename__ = "comments"
+class ListComments(Base):
+    __tablename__ = "ListComments"
 
     comment_id = Column(Integer, primary_key=True, index=True)
     book_list_id = Column(Integer, ForeignKey("bookLists.list_id"), primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), primary_key=True, index=True)
+    comment = Column(String, index=True)
+
+    booklist = relationship("BookList", back_populates="comments")
+    user = relationship("User", back_populates="comments")
+
+class BookComments(Base):
+    __tablename__ = "bookComments"
+
+    comment_id = Column(Integer, primary_key=True, index=True)
+    book_id = Column(String,index=True)
     user_id = Column(Integer, ForeignKey("users.user_id"), primary_key=True, index=True)
     comment = Column(String, index=True)
 

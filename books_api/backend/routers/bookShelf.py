@@ -1,149 +1,122 @@
-from fastapi import APIRouter, HTTPException,Depends
-from typing import List
-
-from backend.schemas import SearchBookSchema, BookSchema, ListCreate, ListResponse, BookSavedSchema
-from backend.bookShelf.book_handler import search_book_shelf,get_book
-from backend.bookShelf.list_handler import *
-from backend.database import get_db
+from fastapi import APIRouter, HTTPException, Depends
+from typing import List, Callable
 from sqlalchemy.orm import Session
+
+from backend.schemas import (
+    SearchBookSchema, BookSchema, ListCreate, ListPreview, 
+    BookSavedSchema, ListComments, BookComments, ListSchema
+)
+from backend.bookShelf.book_handler import search_book_shelf, get_book
+from backend.bookShelf.list_handler import (
+    get_list, get_lists_for_user, get_lists_for_book, get_saved_books_for_list,
+    create_list, delete_list, add_book_to_list, delete_book_from_list,
+    save_list, get_saved_lists
+)
+from backend.bookShelf.comment_handler import (
+    get_comments_for_list, create_comment_on_list, delete_comment_on_list,
+    get_comments_for_book, create_comment_on_book, delete_comment_on_book
+)
+from backend.database import get_db
 
 router = APIRouter()
 
-# endpoints para livro
-@router.get("/search/{search_term}", response_model=List[SearchBookSchema])
-def search_book_shelf_endpoint(search_term: str):
+# TODO: adicionar endpoint para dar like numa lista
+# TODO: adicionar endpoint para mudar a visibilidade de uma lista
+
+
+def handle_request(func: Callable, *args, **kwargs):
+    """Encapsula chamadas para tratamento padronizado de erros"""
     try:
-        books = search_book_shelf(search_term)
-        return books
+        return func(*args, **kwargs)
     except HTTPException as http_ex:
         raise http_ex
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Endpoints para livro
+@router.get("/search/{search_term}", response_model=List[SearchBookSchema])
+def search_book_shelf_endpoint(search_term: str):
+    return handle_request(search_book_shelf, search_term)
 
 
 @router.get("/book/{id}", response_model=BookSchema)
 def get_book_endpoint(id: str):
-    try:
-        book = get_book(id)
-        return book
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return handle_request(get_book, id)
 
 
-# endpoints para lista
-@router.get("/list/{user_id}", response_model=List[ListResponse])
+# Endpoints para lista
+@router.get("/list/{list_id}", response_model=ListSchema)
+def get_list_endpoint(list_id: int, db: Session = Depends(get_db)):
+    return handle_request(get_list, list_id, db)
+
+
+@router.get("/user/{user_id}/lists", response_model=List[ListPreview])
 def get_lists_for_user_endpoint(user_id: int, db: Session = Depends(get_db)):
-    try:
-        lists = get_lists_for_user(user_id, db)
-        return lists
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return handle_request(get_lists_for_user, user_id, db)
 
-@router.get("/list/{book_id}", response_model=List[ListResponse])
+
+@router.get("/book/{book_id}/lists", response_model=List[ListPreview])
 def get_lists_for_book_endpoint(book_id: int, db: Session = Depends(get_db)):
-    try: 
-        lists = get_lists_for_book(book_id, db)
-        return lists
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return handle_request(get_lists_for_book, book_id, db)
 
-@router.get("/list/books/{list_id}", response_model=List[BookSavedSchema])
+
+@router.get("/list/{list_id}/books", response_model=List[BookSavedSchema])
 def get_saved_books_from_list_endpoint(list_id: int, db: Session = Depends(get_db)):
-    try:
-        books = get_saved_books_for_list(list_id, db)
-        return books
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return handle_request(get_saved_books_for_list, list_id, db)
 
-@router.post("/list/create")
+
+@router.post("/list/create", response_model=ListSchema)
 def create_list_endpoint(list_to_create: ListCreate, db: Session = Depends(get_db)):
-    try:
-        saved_list = create_list(list_to_create, db)
-        return saved_list
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return handle_request(create_list, list_to_create, db)
 
-@router.delete("/list/delete/{list_id}")
+
+@router.delete("/list/{list_id}")
 def delete_list_endpoint(list_id: int, db: Session = Depends(get_db)):
-    try:
-        delete_list(list_id, db)
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return handle_request(delete_list, list_id, db)
 
-@router.post("/list/add/{list_id}")
+
+@router.post("/list/{list_id}/add", response_model=ListSchema)
 def add_book_to_list_endpoint(list_id: int, book: BookSavedSchema, db: Session = Depends(get_db)):
-    try:
-        add_book_to_list(list_id, book, db)
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return handle_request(add_book_to_list, list_id, book, db)
 
-@router.delete("/list/remove/{saved_book_id}")
-def remove_book_from_list_endpoint(saved_book_id: int, db: Session = Depends(get_db)):
-    try:
-        delete_book_from_list(saved_book_id, db)
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    
-@router.post("/list/save/{user_id}/{list_id}")
+
+@router.delete("/list/{list_id}/remove/{book_id}")
+def remove_book_from_list_endpoint(list_id: int, book_id: int, db: Session = Depends(get_db)):
+    return handle_request(delete_book_from_list, list_id, book_id, db)
+
+
+@router.post("/user/{user_id}/save-list/{list_id}")
 def save_list_endpoint(user_id: int, list_id: int, db: Session = Depends(get_db)):
-    try:
-        save_list(user_id, list_id, db)
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return handle_request(save_list, user_id, list_id, db)
 
-@router.get("/list/{user_id}", response_model=List[ListResponse])
+
+@router.get("/user/{user_id}/saved-lists", response_model=List[ListPreview])
 def get_saved_lists_endpoint(user_id: int, db: Session = Depends(get_db)):
-    try:
-        lists = get_saved_lists(user_id, db)
-        return lists
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return handle_request(get_saved_lists, user_id, db)
 
-# endpoints para comentários
-@router.get("/comment/{list_id}", response_model=List[Comment])
+
+# Endpoints para comentários
+@router.get("/list/{list_id}/comments", response_model=List[ListComments])
 def get_comments_for_list_endpoint(list_id: int, db: Session = Depends(get_db)):
-    try:
-        comments = get_comments_for_list(list_id, db)
-        return comments 
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    
-@router.post("/comment")
-def comment_on_list_endpoint(comment: Comment, db: Session = Depends(get_db)):
-    try:    
-        comment_on_list(comment, db)
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return handle_request(get_comments_for_list, list_id, db)
 
-@router.delete("/comment/{comment_id}")
-def delete_comment_endpoint(comment_id: int, db: Session = Depends(get_db)):
-    try:    
-        delete_comment(comment_id, db)
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+@router.post("/comment/list", response_model=ListComments)
+def comment_on_list_endpoint(comment: ListComments, db: Session = Depends(get_db)):
+    return handle_request(create_comment_on_list, comment, db)
+
+@router.delete("/comment/list/{list_id}/remove/{comment_id}/user/{user_id}")
+def delete_comment_on_list_endpoint(list_id: int, comment_id: int, user_id: int, db: Session = Depends(get_db)):
+    return handle_request(delete_comment_on_list, list_id, comment_id, user_id, db)
+
+@router.get("/book/{book_id}/comments", response_model=List[BookComments])
+def get_commets_for_book_endpoint(book_id: int, db: Session = Depends(get_db)):
+    return handle_request(get_comments_for_book, book_id, db)
+
+@router.post("/comment/book", response_model=BookComments)
+def comment_on_book_endpoint(comment: BookComments, db: Session = Depends(get_db)):
+    return handle_request(create_comment_on_book, comment, db)
+
+@router.delete("/comment/book/{book_id}/remove/{comment_id}/user/{user_id}")
+def delete_comment_on_book_endpoint(book_id:str,comment_id: int, user_id: int, db: Session = Depends(get_db)):
+    return handle_request(delete_comment_on_book,book_id, comment_id, user_id, db)

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { get_book } from '../api.js';
+import { get_book } from '../api/api_book.js';
 
 const BookPage = () => {
     const { book_id } = useParams();  // Obtém o book_id da URL
