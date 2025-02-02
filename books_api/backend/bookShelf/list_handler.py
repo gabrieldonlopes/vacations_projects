@@ -4,8 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from backend.database import get_db
-from backend.models import BookList, BookSaved, SavedList
-from backend.schemas import ListSchema, BookSavedSchema, ListCreate, ListSave, ListResponse
+from backend.models import BookList, BookSaved, SavedLists
+from backend.schemas import ListSchema, BookSavedSchema, ListCreate, ListResponse,Comment
 
 async def transform_list_to_list_response(list_obj: ListSchema, db: AsyncSession) -> ListResponse:
     list_id = list_obj.id
@@ -13,7 +13,7 @@ async def transform_list_to_list_response(list_obj: ListSchema, db: AsyncSession
     list_description = list_obj.description
     list_visibility = list_obj.visibility
     
-    list_thumbnail = [book.book_thumbnail for book in await get_saved_books_for_list(list_id, db) if book.book_thumbnail]
+    list_thumbnail = [book.book_thumbnail for book in await get_saved_books_for_list(list_id, db) if book.book_thumbnail][0:4]
     
     return ListResponse(
         list_id=list_id, name=list_name, description=list_description, 
@@ -39,7 +39,7 @@ async def get_lists_for_book(saved_book_id: int, db: AsyncSession = Depends(get_
     return [await transform_list_to_list_response(list_obj, db) for list_obj in lists]
 
 async def get_saved_lists(user_id: int, db: AsyncSession = Depends(get_db)) -> List[ListResponse]:
-    result = await db.execute(select(SavedList).filter(SavedList.user_id == user_id))
+    result = await db.execute(select(SavedLists).filter(SavedLists.user_id == user_id))
     lists = result.scalars().all()
     return [await transform_list_to_list_response(list_obj, db) for list_obj in lists]
 
@@ -67,12 +67,12 @@ async def delete_list(list_id: int, db: AsyncSession = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-async def save_list(list_to_save: ListSave, db: AsyncSession = Depends(get_db)):
-    db_list = await db.get(BookList, list_to_save.list_id)
+async def save_list(user_id: int, list_id: int, db: AsyncSession = Depends(get_db)):
+    db_list = await db.get(BookList, list_id)
     if not db_list:
         raise HTTPException(status_code=404, detail="List not found.")
     
-    saved_list = SavedList(list_id=list_to_save.list_id, user_id=list_to_save.user_id)
+    saved_list = SavedLists(book_list_id=list_id, user_id=user_id) # isso aqui está confuso
     db.add(saved_list)
     await db.commit()
 
@@ -84,10 +84,10 @@ async def add_book_to_list(list_id: int, book: BookSavedSchema, db: AsyncSession
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-async def delete_book_from_list(saved_book_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_book_from_list(list_id: int,saved_book_id: int, db: AsyncSession = Depends(get_db)):
     try:
         book = await db.get(BookSaved, saved_book_id)
-        if not book:
+        if not book or book.book_list_id != list_id:
             raise HTTPException(status_code=404, detail="Book not found.")
         
         await db.delete(book)
@@ -95,3 +95,26 @@ async def delete_book_from_list(saved_book_id: int, db: AsyncSession = Depends(g
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+async def comment_on_list (comment: Comment, db: AsyncSession = Depends(get_db)):
+    try:
+        db_comment = Comment(list_id=comment.list_id, user_id=comment.user_id, comment=comment.comment)
+        db.add(db_comment)
+        await db.commit()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+async def get_comments_for_list(list_id: int, db: AsyncSession = Depends(get_db)) -> List[Comment]:
+    result = await db.execute(select(Comment).filter(Comment.list_id == list_id))
+    comments = result.scalars().all()
+    return comments
+
+async def delete_comment(comment_id: int, db: AsyncSession = Depends(get_db)):
+    try:
+        comment = await db.get(Comment, comment_id)
+        if not comment:
+            raise HTTPException(status_code=404, detail="Comment not found.")
+        
+        await db.delete(comment)
+        await db.commit()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -47,7 +47,7 @@ class BookSchema(BaseModel):
     industryIdentifiers: Optional[List[dict]]
 
 class BookSavedSchema(BaseModel): # tira necessidade de fazer uma chamada da api
-    saved_book_id: int
+    saved_book_id: int # permite que o mesmo livro esteja salvo em mais de uma lista 
     book_id: str
     book_title: str
     book_thumbnail: str # TODO: adicionar uma forma de pegar a url da imagem exemplo. caso não haja thumbnail, usar um default
@@ -70,10 +70,6 @@ class ListCreate(BaseModel):
     description: Optional[str]
     visibility: bool
 
-class ListSave(BaseModel):
-    list_id: int
-    user_id: int
-
 class ListResponse(BaseModel):
     list_id: int
     name: str
@@ -82,5 +78,7 @@ class ListResponse(BaseModel):
     visibility: bool
 
 class Comment(BaseModel):
+    list_id: int
     user_id: int
     comment: str
+
