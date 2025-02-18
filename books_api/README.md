@@ -25,10 +25,12 @@ Por exemplo:
 1. Clone o repositório:  
    `git clone https://github.com/GabeDON/vacations_projects.git`
 2. Adquira uma chave da API e adicione-a num arquivo `.env` com nome `GOOGLE_API_KEY`
-3. Crie um `.venv` para instação dos módulos python
-   `python -m venv .venv`
+3. Crie um `.venv` para instação dos módulos python e ative-o
+   `python -m venv .venv` e `source .venv/bin/activate` 
 4. Instale as dependências:  
-   `npm install` ou `pip install -r requirements.txt`
+   `npm install` e `pip install -r requirements.txt`
+5. Crie as tabelas e inicialize o banco de dados
+   ` python -m main --create-db `
 5. Rode a aplicação em dois terminais diferentes:  
-   `npm run dev` ou `python -m main.py`
+   `npm run dev` ou `python -m main --run-server`
    

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Callable
-from sqlalchemy.orm import Session
-
+from sqlalchemy.ext.asyncio import AsyncSession
+import asyncio
 from backend.schemas import (
     SearchBookSchema, BookSchema, ListCreate, ListPreview, 
     BookSavedSchema, ListComments, BookComments, ListSchema
@@ -24,10 +24,12 @@ router = APIRouter()
 # TODO: adicionar endpoint para mudar a visibilidade de uma lista
 
 
-def handle_request(func: Callable, *args, **kwargs):
+async def handle_request(func: Callable, *args, **kwargs):
     """Encapsula chamadas para tratamento padronizado de erros"""
     try:
-        return func(*args, **kwargs)
+        if asyncio.iscoroutinefunction(func):  # Verifica se a função é async
+            return await func(*args, **kwargs)
+        return func(*args, **kwargs)  # Executa normalmente se for síncrona 
     except HTTPException as http_ex:
         raise http_ex
     except Exception as e:
@@ -36,87 +38,92 @@ def handle_request(func: Callable, *args, **kwargs):
 
 # Endpoints para livro
 @router.get("/search/{search_term}", response_model=List[SearchBookSchema])
-def search_book_shelf_endpoint(search_term: str):
-    return handle_request(search_book_shelf, search_term)
+async def search_book_shelf_endpoint(search_term: str):
+    return await handle_request(search_book_shelf, search_term)
 
 
 @router.get("/book/{id}", response_model=BookSchema)
-def get_book_endpoint(id: str):
-    return handle_request(get_book, id)
+async def get_book_endpoint(id: str):
+    return await handle_request(get_book, id)
 
 
 # Endpoints para lista
 @router.get("/list/{list_id}", response_model=ListSchema)
-def get_list_endpoint(list_id: int, db: Session = Depends(get_db)):
-    return handle_request(get_list, list_id, db)
+async def get_list_endpoint(list_id: int, db: AsyncSession = Depends(get_db)):
+    return await handle_request(get_list, list_id, db)
 
 
 @router.get("/user/{user_id}/lists", response_model=List[ListPreview])
-def get_lists_for_user_endpoint(user_id: int, db: Session = Depends(get_db)):
-    return handle_request(get_lists_for_user, user_id, db)
+async def get_lists_for_user_endpoint(user_id: int, db: AsyncSession = Depends(get_db)):
+    return await handle_request(get_lists_for_user, user_id, db)
 
 
 @router.get("/book/{book_id}/lists", response_model=List[ListPreview])
-def get_lists_for_book_endpoint(book_id: int, db: Session = Depends(get_db)):
-    return handle_request(get_lists_for_book, book_id, db)
+async def get_lists_for_book_endpoint(book_id: int, db: AsyncSession = Depends(get_db)):
+    return await handle_request(get_lists_for_book, book_id, db)
 
 
 @router.get("/list/{list_id}/books", response_model=List[BookSavedSchema])
-def get_saved_books_from_list_endpoint(list_id: int, db: Session = Depends(get_db)):
-    return handle_request(get_saved_books_for_list, list_id, db)
+async def get_books_from_list_endpoint(list_id: int, db: AsyncSession = Depends(get_db)):
+    return await handle_request(get_saved_books_for_list, list_id, db)
 
 
-@router.post("/list/create", response_model=ListSchema)
-def create_list_endpoint(list_to_create: ListCreate, db: Session = Depends(get_db)):
-    return handle_request(create_list, list_to_create, db)
+@router.post("/list/create")
+async def create_list_endpoint(list_to_create: ListCreate, db: AsyncSession = Depends(get_db)):
+    return await handle_request(create_list, list_to_create, db)
 
 
-@router.delete("/list/{list_id}")
-def delete_list_endpoint(list_id: int, db: Session = Depends(get_db)):
-    return handle_request(delete_list, list_id, db)
+@router.delete("/list/delete/{list_id}")
+async def delete_list_endpoint(list_id: int, db: AsyncSession = Depends(get_db)):
+    return await handle_request(delete_list, list_id, db)
 
 
 @router.post("/list/{list_id}/add", response_model=ListSchema)
-def add_book_to_list_endpoint(list_id: int, book: BookSavedSchema, db: Session = Depends(get_db)):
-    return handle_request(add_book_to_list, list_id, book, db)
+async def add_book_to_list_endpoint(list_id: int, book: BookSavedSchema, db: AsyncSession = Depends(get_db)):
+    return await handle_request(add_book_to_list, list_id, book, db)
 
 
 @router.delete("/list/{list_id}/remove/{book_id}")
-def remove_book_from_list_endpoint(list_id: int, book_id: int, db: Session = Depends(get_db)):
-    return handle_request(delete_book_from_list, list_id, book_id, db)
+async def remove_book_from_list_endpoint(list_id: int, book_id: int, db: AsyncSession = Depends(get_db)):
+    return await handle_request(delete_book_from_list, list_id, book_id, db)
 
 
-@router.post("/user/{user_id}/save-list/{list_id}")
-def save_list_endpoint(user_id: int, list_id: int, db: Session = Depends(get_db)):
-    return handle_request(save_list, user_id, list_id, db)
+@router.post("/user/{user_id}/save/{list_id}")
+async def save_list_endpoint(user_id: int, list_id: int, db: AsyncSession = Depends(get_db)):
+    return await handle_request(save_list, user_id, list_id, db)
 
 
 @router.get("/user/{user_id}/saved-lists", response_model=List[ListPreview])
-def get_saved_lists_endpoint(user_id: int, db: Session = Depends(get_db)):
-    return handle_request(get_saved_lists, user_id, db)
+async def get_saved_lists_endpoint(user_id: int, db: AsyncSession = Depends(get_db)):
+    return await handle_request(get_saved_lists, user_id, db)
 
 
 # Endpoints para comentários
 @router.get("/list/{list_id}/comments", response_model=List[ListComments])
-def get_comments_for_list_endpoint(list_id: int, db: Session = Depends(get_db)):
-    return handle_request(get_comments_for_list, list_id, db)
+async def get_comments_for_list_endpoint(list_id: int, db: AsyncSession = Depends(get_db)):
+    return await handle_request(get_comments_for_list, list_id, db)
+
 
 @router.post("/comment/list", response_model=ListComments)
-def comment_on_list_endpoint(comment: ListComments, db: Session = Depends(get_db)):
-    return handle_request(create_comment_on_list, comment, db)
+async def comment_on_list_endpoint(comment: ListComments, db: AsyncSession = Depends(get_db)):
+    return await handle_request(create_comment_on_list, comment, db)
+
 
 @router.delete("/comment/list/{list_id}/remove/{comment_id}/user/{user_id}")
-def delete_comment_on_list_endpoint(list_id: int, comment_id: int, user_id: int, db: Session = Depends(get_db)):
-    return handle_request(delete_comment_on_list, list_id, comment_id, user_id, db)
+async def delete_comment_on_list_endpoint(list_id: int, comment_id: int, user_id: int, db: AsyncSession = Depends(get_db)):
+    return await handle_request(delete_comment_on_list, list_id, comment_id, user_id, db)
+
 
 @router.get("/book/{book_id}/comments", response_model=List[BookComments])
-def get_commets_for_book_endpoint(book_id: int, db: Session = Depends(get_db)):
-    return handle_request(get_comments_for_book, book_id, db)
+async def get_comments_for_book_endpoint(book_id: int, db: AsyncSession = Depends(get_db)):
+    return await handle_request(get_comments_for_book, book_id, db)
+
 
 @router.post("/comment/book", response_model=BookComments)
-def comment_on_book_endpoint(comment: BookComments, db: Session = Depends(get_db)):
-    return handle_request(create_comment_on_book, comment, db)
+async def comment_on_book_endpoint(comment: BookComments, db: AsyncSession = Depends(get_db)):
+    return await handle_request(create_comment_on_book, comment, db)
+
 
 @router.delete("/comment/book/{book_id}/remove/{comment_id}/user/{user_id}")
-def delete_comment_on_book_endpoint(book_id:str,comment_id: int, user_id: int, db: Session = Depends(get_db)):
-    return handle_request(delete_comment_on_book,book_id, comment_id, user_id, db)
+async def delete_comment_on_book_endpoint(book_id: int, comment_id: int, user_id: int, db: AsyncSession = Depends(get_db)): 
+    return await handle_request(delete_comment_on_book, book_id, comment_id, user_id, db)

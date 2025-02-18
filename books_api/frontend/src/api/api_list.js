@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://localhost:8000/bookshelf';
 
 const handleRequest = async (requestFunction) => {
     try {
@@ -11,26 +11,26 @@ const handleRequest = async (requestFunction) => {
         throw new Error(errorMessage);
     }
 };
-// TODO: atualizar urls
-const get_list = (list_id) => handleRequest(() => axios.get(`${API_URL}/bookshelf/list/${list_id}`));
 
-const get_list_preview_for_user = (user_id) => handleRequest(() => axios.get(`${API_URL}/bookshelf/list/${user_id}`));
+const get_list = (list_id) => handleRequest(() => axios.get(`${API_URL}/list/${list_id}`));
 
-const get_list_preview_for_book = (book_id) => handleRequest(() => axios.get(`${API_URL}/bookshelf/list/${book_id}`));
+const get_list_preview_for_user = (user_id) => handleRequest(() => axios.get(`${API_URL}/user/${user_id}/lists`));
 
-const create_list = (list_to_create) => handleRequest(() => axios.post(`${API_URL}/bookshelf/list/create`, list_to_create));
+const get_list_preview_for_book = (book_id) => handleRequest(() => axios.get(`${API_URL}/book/${book_id}/lists`));
 
-const delete_list = (list_id) => handleRequest(() => axios.delete(`${API_URL}/bookshelf/list/delete/${list_id}`));
+const create_list = (list_to_create) => handleRequest(() => axios.post(`${API_URL}/list/create`, list_to_create));
 
-const add_book_to_list = (list_id, book_data) => handleRequest(() => axios.post(`${API_URL}/bookshelf/list/add/${list_id}`, book_data));
+const delete_list = (list_id) => handleRequest(() => axios.delete(`${API_URL}/list/delete/${list_id}`));
 
-const remove_book_from_list = (list_id, book_id) => handleRequest(() => axios.delete(`${API_URL}/bookshelf/list/remove/${list_id}/${book_id}`));
+const add_book_to_list = (list_id, book_data) => handleRequest(() => axios.post(`${API_URL}/list/${list_id}/add`, book_data));
 
-const get_books_from_list = (list_id) => handleRequest(() => axios.get(`${API_URL}/bookshelf/list/books/${list_id}`));
+const remove_book_from_list = (list_id, book_id) => handleRequest(() => axios.delete(`${API_URL}/list/${list_id}/remove/${book_id}`));
 
-const save_list = (user_id, list_id) => handleRequest(() => axios.post(`${API_URL}/bookshelf/list/save/${user_id}/${list_id}`));
+const get_books_from_list = (list_id) => handleRequest(() => axios.get(`${API_URL}/list/${list_id}/books`));
 
-const get_saved_lists = (user_id) => handleRequest(() => axios.get(`${API_URL}/bookshelf/list/saved/${user_id}`));
+const save_list = (user_id, list_id) => handleRequest(() => axios.post(`${API_URL}/user/${user_id}/save/${list_id}`));
+
+const get_saved_lists = (user_id) => handleRequest(() => axios.get(`${API_URL}/user/${user_id}/saved-lists`));
 
 export {
     handleRequest, 

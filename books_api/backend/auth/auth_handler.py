@@ -5,7 +5,8 @@ from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 from backend.database import get_db
 from backend.schemas import TokenData
@@ -25,27 +26,24 @@ router = APIRouter()
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-
 def get_password_hash(password):
     return pwd_context.hash(password)
 
+async def get_user(db: AsyncSession, username: str):
+    result = await db.execute(select(User).filter(User.username == username))
+    return result.scalars().first()
 
-def get_user(db: Session, username: str):
-    db_user = db.query(User).filter(User.username == username).first()
-    return db_user
+async def get_user_by_email(db: AsyncSession, email: str):
+    result = await db.execute(select(User).filter(User.email == email))
+    return result.scalars().first()
 
-def get_user_by_email(db: Session, email: str):
-    db_user = db.query(User).filter(User.email == email).first()
-    return db_user
-
-def authenticate_user(db: Session, username: str, password: str):
-    user = get_user(db, username)
+async def authenticate_user(db: AsyncSession, username: str, password: str):
+    user = await get_user(db, username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
         return False
     return user
-
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
@@ -57,8 +55,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -73,11 +70,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     except InvalidTokenError:
         raise credentials_exception
 
-    user = db.query(User).filter(User.username == token_data.username).first()
+    user = await get_user(db, token_data.username)
     if user is None:
         raise credentials_exception
     return user
-
 
 async def get_current_active_user(current_user: User = Depends(get_current_user)):
     return current_user

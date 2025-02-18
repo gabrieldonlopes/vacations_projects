@@ -1,18 +1,26 @@
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from .models import Base
 
-DATABASE_URL = "sqlite:///./books_api/test.db"  # You can use any database here
+DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-metadata = MetaData()
+engine = create_async_engine(DATABASE_URL)
+#engine = create_async_engine(DATABASE_URL, echo=True)
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+AsyncSessionLocal = sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
 
-Base.metadata.create_all(bind=engine)
+async def get_db():
+    async with AsyncSessionLocal() as db:
+        try:
+            yield db
+        finally:
+            await db.close()
+
+async def create_tables():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    print("tabelas criadas com sucesso")

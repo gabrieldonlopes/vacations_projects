@@ -17,6 +17,7 @@ class UserCreate(BaseModel):
     password: str
 
 class UserResponse(BaseModel):
+    user_id: int
     username: str
     email: str | None = None
 
