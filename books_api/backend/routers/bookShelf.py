@@ -22,7 +22,7 @@ router = APIRouter()
 
 # TODO: adicionar endpoint para dar like numa lista
 # TODO: adicionar endpoint para mudar a visibilidade de uma lista
-
+# TODO: adicionar possibilidade de 
 
 async def handle_request(func: Callable, *args, **kwargs):
     """Encapsula chamadas para tratamento padronizado de erros"""
@@ -77,7 +77,7 @@ async def create_list_endpoint(list_to_create: ListCreate, db: AsyncSession = De
 async def delete_list_endpoint(list_id: int, db: AsyncSession = Depends(get_db)):
     return await handle_request(delete_list, list_id, db)
 
-
+#TODO: verificação de usuário ao alterar uma lista
 @router.post("/list/{list_id}/add", response_model=ListSchema)
 async def add_book_to_list_endpoint(list_id: int, book: BookSavedSchema, db: AsyncSession = Depends(get_db)):
     return await handle_request(add_book_to_list, list_id, book, db)
@@ -99,6 +99,8 @@ async def get_saved_lists_endpoint(user_id: int, db: AsyncSession = Depends(get_
 
 
 # Endpoints para comentários
+#TODO: verificação de usuário ao comentar
+#TODO: verificar erros
 @router.get("/list/{list_id}/comments", response_model=List[ListComments])
 async def get_comments_for_list_endpoint(list_id: int, db: AsyncSession = Depends(get_db)):
     return await handle_request(get_comments_for_list, list_id, db)

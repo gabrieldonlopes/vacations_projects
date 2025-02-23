@@ -13,10 +13,11 @@ const ProfilePage = () => {
     const [createdLists, setCreatedLists] = useState([]);
     const [savedLists, setSavedLists] = useState([]);
     const [savedBooks, setSavedBooks] = useState([]);  
-
+    // por algum motivo o useEffect está fazendo duas chamadas da api ao mesmo tempo
+    // TODO: resolver isso
     useEffect(() => {
         if (!user) {
-            navigate('/login');
+            navigate('/');
             return null;
         } else {
             get_list_preview_for_user(user.user_id).then((response) => {

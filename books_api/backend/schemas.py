@@ -20,6 +20,8 @@ class UserResponse(BaseModel):
     user_id: int
     username: str
     email: str | None = None
+    class Config:
+        from_attributes = True
 
 class UserInDB(UserResponse):
     hashed_password: str

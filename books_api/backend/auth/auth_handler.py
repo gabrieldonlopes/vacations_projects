@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from backend.database import get_db
-from backend.schemas import TokenData
+from backend.schemas import TokenData, UserResponse
 from backend.models import User
 
 # to get a string like this run:
@@ -39,7 +39,17 @@ async def get_user_by_email(db: AsyncSession, email: str):
 
 async def get_user_by_id(db: AsyncSession, user_id: int):
     result = await db.execute(select(User).filter(User.user_id == user_id))
-    return result.scalars().first()
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    user_response = UserResponse(
+        user_id=user.user_id,
+        username=user.username,
+        email=user.email
+    )
+
+    return user_response
+
 
 async def authenticate_user(db: AsyncSession, username: str, password: str):
     user = await get_user(db, username)

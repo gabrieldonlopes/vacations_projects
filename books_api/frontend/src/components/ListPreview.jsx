@@ -12,11 +12,11 @@ const ListPreview = ({ list }) => {
 
     const handleListClick = (list_id) => {
         navigate(`/list/${list_id}`);  // Redireciona para a página da lista
-      };
+    };
     
     return (
         <div className="flex flex-row p-4 rounded-lg shadow-md w-full max-w-sm relative cursor-pointer"
-        onclick = {() => handleListClick(list.id)}
+        onClick={() => handleListClick(list.list_id)}  // Corrigido para onClick
         >
             <div className="grid grid-cols-3 gap-2 mb-4">
                 {thumbnail.slice(0, 6).map((thumbnail, index) => (

@@ -11,48 +11,49 @@ const ListPage = () => {
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);  // Estado de carregamento
 
+    // fazer 3 chamadas de api para uma lista não me parece a melhor alternativa
     useEffect(() => {
-        const fetchList = async () => {
+        let isMounted = true; // Para evitar atualizações de estado em um componente desmontado
+    
+        const fetchData = async () => {
             try {
-                const data = await get_list(list_id);
-                setList(data);
-            } catch (error) {
-                console.error("Erro ao carregar a lista:", error);
-            }
-        };
-
-        const fetchUser = async () => {
-            try {
-                if (list) {
-                    const data = await get_user_by_id(list.owner_user_id);
-                    setUser(data);
+                setLoading(true); // Inicia o carregamento
+    
+                // Busca a lista
+                const listData = await get_list(list_id);
+                if (isMounted) {
+                    setList(listData);
+                }
+    
+                // Busca o usuário dono da lista
+                if (listData) {
+                    const userData = await get_user_by_id(listData.owner_user_id);
+                    if (isMounted) {
+                        setUser(userData);
+                    }
+                }
+    
+                // Busca os livros da lista
+                const booksData = await get_books_from_list(list_id);
+                if (isMounted) {
+                    setBooks(booksData);
                 }
             } catch (error) {
-                console.error("Erro ao carregar o usuário:", error);
-            }
-        };
-
-        const fetchListBooks = async () => {
-            try {
-                const data = await get_books_from_list(list_id);
-                setBooks(data);
-            } catch (error) {
-                console.error("Erro ao carregar os livros da lista:", error);
+                console.error("Erro ao carregar os dados:", error);
             } finally {
-                setLoading(false);  // Fim do carregamento
+                if (isMounted) {
+                    setLoading(false); // Finaliza o carregamento
+                }
             }
         };
-
-        fetchList();
-        fetchUser();
-        fetchListBooks();
-    }, [list_id, list]);  // Dependências do useEffect
-
-    useEffect(() => {
-        if (list) {
-            fetchUser();
-        }
-    }, [list]);  // Executa fetchUser quando a lista é carregada
+    
+        fetchData();
+    
+        // Função de limpeza
+        return () => {
+            isMounted = false;
+        };
+    }, [list_id]); // Dependências do useEffect
 
     if (loading) {
         return (
@@ -74,8 +75,8 @@ const ListPage = () => {
         <div className="min-h-screen py-10 px-6">
             <div className="max-w-6xl mx-auto p-8 rounded-lg shadow-lg">
                 <h1 className="text-3xl font-bold mb-4">{list.name}</h1>
-                <p className="text-gray-600 mb-4">{list.description}</p>
-                <p className="text-gray-600 mb-4">Criada por: {user ? user.name : "Usuário desconhecido"}</p>
+                <p className="text-gray-400 mb-4">{list.description}</p>
+                <p className="text-gray-400 mb-4">Criada por: {user ? user.username : "Usuário desconhecido"}</p>
 
                 {/* Informações de likes e visibilidade */}
                 <div className="flex gap-4 mb-6">
@@ -83,7 +84,7 @@ const ListPage = () => {
                         <span className="font-semibold">Likes:</span> {list.likes || 0}
                     </p>
                     <p className="text-gray-600">
-                        <span className="font-semibold">Visibilidade:</span> {list.public ? "Pública" : "Privada"}
+                        <span className="font-semibold">Visibilidade:</span> {list.public ? "Privada" : "Publica"}
                     </p>
                 </div>
 
@@ -101,7 +102,13 @@ const ListPage = () => {
                 </div>
 
                 {/* Botão de voltar */}
-                <div className="mt-8 text-center">
+                <div className="mt-8 gap-8 text-center">
+                    <button
+                    onClick={() => navigate(`/add-book/${list_id}`)}
+                    className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition"
+                    >
+                        adicionar livro
+                    </button>
                     <button
                         onClick={() => window.history.back()}
                         className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition"
