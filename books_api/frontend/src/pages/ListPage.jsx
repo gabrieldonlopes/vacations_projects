@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { get_list, get_books_from_list } from "../api/api_list";
+import { get_list, get_books_from_list,add_book_to_list, delete_book_from_list } from "../api/api_list";
 import { get_user_by_id } from "../api/api_auth";
 import BookPreview from "../components/BookPreview"; // Importe o componente BookPreview ou BookSavedPreview
 
@@ -104,7 +104,7 @@ const ListPage = () => {
                 {/* Botão de voltar */}
                 <div className="mt-8 gap-8 text-center">
                     <button
-                    onClick={() => navigate(`/add-book/${list_id}`)}
+                    onClick={() => add_book_to_list(list_id)}
                     className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition"
                     >
                         adicionar livro

@@ -45,7 +45,7 @@ class BookList(Base):
     saved_lists = relationship("SavedLists", back_populates="book_list")
     comments = relationship("ListComments", back_populates="book_list")
 
-
+# TODO: uma alternativa seria adicionar uma coluna com o id de quem salvou o livro
 class BookSaved(Base):  # Essa tabela guarda os livros salvos em uma estante
     __tablename__ = "books_saved"
 

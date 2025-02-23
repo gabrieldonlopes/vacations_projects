@@ -85,9 +85,11 @@ async def save_list(user_id: int, list_id: int, db: AsyncSession = Depends(get_d
     if not db_list:
         raise HTTPException(status_code=404, detail="List not found.")
     
-    saved_list = SavedLists(book_list_id=list_id, user_id=user_id) # isso aqui está confuso
+    saved_list = SavedLists(book_list_id=list_id, user_id=user_id)
     db.add(saved_list)
     await db.commit()
+
+    return {"message": "List saved successfully"}
 
 async def add_book_to_list(list_id: int, book: BookSavedSchema, db: AsyncSession = Depends(get_db)):
     try:
@@ -96,6 +98,8 @@ async def add_book_to_list(list_id: int, book: BookSavedSchema, db: AsyncSession
         await db.commit()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+    return {"message": "Book added to list successfully"}
 
 async def delete_book_from_list(list_id: int, book_id: int, db: AsyncSession = Depends(get_db)):
     try:
@@ -108,3 +112,4 @@ async def delete_book_from_list(list_id: int, book_id: int, db: AsyncSession = D
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+    return {"message": "Book removed from list successfully"}
