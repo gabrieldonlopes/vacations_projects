@@ -33,6 +33,8 @@ class SearchBookSchema(BaseModel):
     volumeInfo_imageLinks_thumbnail: Optional[str] | None
     volumeInfo_averageRating: Optional[float]
     volumeInfo_language: Optional[str]
+    class Config:
+        from_attributes = True
 
 class BookSchema(BaseModel):
     id: str
@@ -62,7 +64,7 @@ class ListSchema(BaseModel):
     description: Optional[str]
     likes: int
     visibility: bool
-    books: List[BookSavedSchema]
+    books: List[SearchBookSchema]
     class Config:
         from_attributes = True
 

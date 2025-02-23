@@ -37,6 +37,10 @@ async def get_user_by_email(db: AsyncSession, email: str):
     result = await db.execute(select(User).filter(User.email == email))
     return result.scalars().first()
 
+async def get_user_by_id(db: AsyncSession, user_id: int):
+    result = await db.execute(select(User).filter(User.user_id == user_id))
+    return result.scalars().first()
+
 async def authenticate_user(db: AsyncSession, username: str, password: str):
     user = await get_user(db, username)
     if not user:

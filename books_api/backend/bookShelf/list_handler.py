@@ -21,8 +21,13 @@ async def transform_list_to_list_response(list_obj: ListSchema, db: AsyncSession
     )
 
 async def get_list(list_id: int, db: AsyncSession = Depends(get_db)) -> ListSchema:
-    result = await db.execute(select(BookList).filter(BookList.id == list_id))
+    result = await db.execute(select(BookList).filter(BookList.list_id == list_id))
     list_obj = result.scalars().first()
+    if not list_obj:
+            raise HTTPException(status_code=404, detail="List not found.")
+    books = await get_saved_books_for_list(list_id, db)
+    list_obj.books = books
+    list_obj = ListSchema.model_validate(list_obj)
     return list_obj
 
 async def get_saved_books_for_list(list_id: int, db: AsyncSession = Depends(get_db)) -> List[BookSavedSchema]:

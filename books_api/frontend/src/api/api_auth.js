@@ -48,4 +48,13 @@ const fetchUserProfile = async (token) => {
     }
 };
 
-export { loginUser, registerUser, fetchUserProfile };
+const get_user_by_id = async (user_id) => {
+    try {
+        const response = await axios.get(`${API_URL}/users/${user_id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Fetch user profile error:", error); // TODO: adicionar tratamento de erro
+        throw error;
+    }
+}
+export { loginUser, registerUser, fetchUserProfile, get_user_by_id };
