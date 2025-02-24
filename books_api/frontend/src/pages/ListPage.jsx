@@ -1,63 +1,67 @@
 import React, { useState, useEffect } from "react";
-import { useParams,useNavigate } from "react-router-dom";
-import { get_list, get_books_from_list,add_book_to_list, remove_book_from_list } from "../api/api_list";
+import { useParams, useNavigate } from "react-router-dom";
+import { get_list, add_book_to_list, remove_book_from_list } from "../api/api_list";
 import { get_user_by_id } from "../api/api_auth";
-import BookPreview from "../components/BookPreview"; // Importe o componente BookPreview ou BookSavedPreview
+import BookSavedPreview from "../components/BookSavedPreview";
 import { AuthContext } from "../contexts/AuthContext";
 
 const ListPage = () => {
-    //const { user } = AuthContext(); // usar para quando o usuário quiser adicionar livro
-    const { list_id } = useParams();  // Obtém o list_id da URL
+    const { list_id } = useParams();
     const [list, setList] = useState(null);
     const [user, setUser] = useState(null);
-    const [books, setBooks] = useState([]);
-    
-    const [loading, setLoading] = useState(true);  // Estado de carregamento
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    // fazer 3 chamadas de api para uma lista não me parece a melhor alternativa
     useEffect(() => {
-        let isMounted = true; // Para evitar atualizações de estado em um componente desmontado
-    
+        const abortController = new AbortController();
+
         const fetchData = async () => {
             try {
-                setLoading(true); // Inicia o carregamento
-    
-                // Busca a lista
-                const listData = await get_list(list_id);
-                if (isMounted) {
-                    setList(listData);
-                }
-    
-                // Busca o usuário dono da lista
+                setLoading(true);
+                const listData = await get_list(list_id, { signal: abortController.signal });
+                setList(listData);
+
                 if (listData) {
-                    const userData = await get_user_by_id(listData.owner_user_id);
-                    if (isMounted) {
-                        setUser(userData);
-                    }
-                }
-    
-                // Busca os livros da lista
-                const booksData = await get_books_from_list(list_id);
-                if (isMounted) {
-                    setBooks(booksData);
+                    const userData = await get_user_by_id(listData.owner_user_id, { signal: abortController.signal });
+                    setUser(userData);
                 }
             } catch (error) {
-                console.error("Erro ao carregar os dados:", error);
-            } finally {
-                if (isMounted) {
-                    setLoading(false); // Finaliza o carregamento
+                if (error.name !== 'AbortError') {
+                    console.error("Erro ao carregar os dados:", error);
+                    setError("Erro ao carregar a lista. Tente novamente mais tarde.");
                 }
+            } finally {
+                setLoading(false);
             }
         };
-    
+
         fetchData();
-    
-        // Função de limpeza
+
         return () => {
-            isMounted = false;
+            abortController.abort();
         };
-    }, [list_id]); // Dependências do useEffect
+    }, [list_id]);
+
+    const handleAddBook = async (bookId) => {
+        try {
+            await add_book_to_list(list_id, bookId);
+            const updatedList = await get_list(list_id);
+            setList(updatedList);
+        } catch (error) {
+            console.error("Erro ao adicionar livro:", error);
+        }
+    };
+
+    const handleRemoveBook = async (bookId) => {
+        try {
+            await remove_book_from_list(list_id, bookId);
+            const updatedList = await get_list(list_id);
+            setList(updatedList);
+        } catch (error) {
+            console.error("Erro ao remover livro:", error);
+        }
+    };
 
     if (loading) {
         return (
@@ -68,7 +72,11 @@ const ListPage = () => {
                     <p className="text-2xl font-semibold mt-4">Carregando informações da lista...</p>
                 </div>
             </div>
-        );  // Exibe o spinner e texto de carregamento
+        );
+    }
+
+    if (error) {
+        return <div className="text-center text-2xl text-red-600">{error}</div>;
     }
 
     if (!list) {
@@ -82,21 +90,21 @@ const ListPage = () => {
                 <p className="text-gray-400 mb-4">{list.description}</p>
                 <p className="text-gray-400 mb-4">Criada por: {user ? user.username : "Usuário desconhecido"}</p>
 
-                {/* Informações de likes e visibilidade */}
                 <div className="flex gap-4 mb-6">
                     <p className="text-gray-600">
                         <span className="font-semibold">Likes:</span> {list.likes || 0}
                     </p>
                     <p className="text-gray-600">
-                        <span className="font-semibold">Visibilidade:</span> {list.public ? "Privada" : "Publica"}
+                        <span className="font-semibold">Visibilidade:</span> {list.visibility ? "Pública" : "Privada"}
                     </p>
                 </div>
 
-                {/* Exibição dos livros */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {books.length > 0 ? (
-                        books.map((book) => (
-                            <BookPreview key={book.id} book={book} />
+                    {Array.isArray(list.books) && list.books.length > 0 ? (
+                        list.books.map((book) => (
+                            <BookSavedPreview
+                            book={book}
+                            />
                         ))
                     ) : (
                         <p className="text-center text-2xl text-gray-700 col-span-full">
@@ -105,16 +113,15 @@ const ListPage = () => {
                     )}
                 </div>
 
-                {/* Botão de voltar */}
                 <div className="mt-8 gap-8 text-center">
                     <button
-                    onClick={() => add_book_to_list(list_id)}
-                    className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition"
+                        onClick={() => handleAddBook("ID_DO_LIVRO_AQUI")}
+                        className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition"
                     >
-                        adicionar livro
+                        Adicionar livro
                     </button>
                     <button
-                        onClick={() => navigate("/")}
+                        onClick={() => navigate(-1)}
                         className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition"
                     >
                         Voltar

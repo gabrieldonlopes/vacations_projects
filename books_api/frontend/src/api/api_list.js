@@ -11,7 +11,7 @@ const handleRequest = async (requestFunction) => {
         throw new Error(errorMessage);
     }
 };
-
+    
 const get_list = (list_id) => handleRequest(() => axios.get(`${API_URL}/list/${list_id}`));
 
 const get_list_preview_for_user = (user_id) => handleRequest(() => axios.get(`${API_URL}/user/${user_id}/lists`));

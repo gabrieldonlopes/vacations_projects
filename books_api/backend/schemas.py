@@ -27,6 +27,8 @@ class UserInDB(UserResponse):
     hashed_password: str
 
 # Book Schemas
+# TODO: adicionar herança (generalizando ou especificando) o schema Book
+# atualmente existem 3 schemas para o mesmo objeto
 class SearchBookSchema(BaseModel):
     id: str
     volumeInfo_title: str
@@ -51,7 +53,7 @@ class BookSchema(BaseModel):
     imageLinks_thumbnail: Optional[str]
     language: Optional[str]
     industryIdentifiers: Optional[List[dict]]
-    averageRating: Optional[float]
+    averageRating: Optional[float | str]
     class Config:
         from_attributes = True
 

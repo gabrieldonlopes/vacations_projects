@@ -48,7 +48,7 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
     try:
         db.add(db_user)
         await db.commit()
-        await db.refresh(db_user) # TODO: ADICIONAR ESSE TIPO DE TRATAMENOT EM OUTRAS CRIAÇÕES ELEMENTOS
+        await db.refresh(db_user)
     except IntegrityError: # TODO: ADICIONAR ESSE TIPO DE EXCEÇÃO EM OUTRAS CRIAÇÕES ELEMENTOS
         db.rollback() 
         raise HTTPException(

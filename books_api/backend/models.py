@@ -57,7 +57,7 @@ class BookSaved(Base):  # Essa tabela guarda os livros salvos em uma estante
 
     book_list = relationship("BookList", back_populates="saved_books")
 
-
+# TODO: generalizar para todos os tipos de comentários
 class ListComments(Base):
     __tablename__ = "list_comments"
 

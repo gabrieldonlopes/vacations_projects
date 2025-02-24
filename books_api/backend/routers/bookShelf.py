@@ -9,7 +9,7 @@ from backend.schemas import (
 from backend.bookShelf.book_handler import search_book_shelf, get_book
 from backend.bookShelf.list_handler import (
     get_list, get_lists_for_user, get_lists_for_book, get_saved_books_for_list,
-    create_list, delete_list, add_book_to_list, delete_book_from_list,
+    create_list, delete_list, add_book_to_list, remove_book_from_list,
     save_list, get_saved_lists
 )
 from backend.bookShelf.comment_handler import (
@@ -22,7 +22,7 @@ router = APIRouter()
 
 # TODO: adicionar endpoint para dar like numa lista
 # TODO: adicionar endpoint para mudar a visibilidade de uma lista
-# TODO: adicionar possibilidade de 
+# TODO: separarar endpoints em outros routers
 
 async def handle_request(func: Callable, *args, **kwargs):
     """Encapsula chamadas para tratamento padronizado de erros"""
@@ -84,8 +84,8 @@ async def add_book_to_list_endpoint(list_id: int, book: BookSavedSchema, db: Asy
 
 
 @router.delete("/list/{list_id}/remove/{book_id}")
-async def remove_book_from_list_endpoint(list_id: int, book_id: int, db: AsyncSession = Depends(get_db)):
-    return await handle_request(delete_book_from_list, list_id, book_id, db)
+async def remove_book_from_list_endpoint(list_id: int, book_id: str, db: AsyncSession = Depends(get_db)):
+    return await handle_request(remove_book_from_list, list_id, book_id, db)
 
 
 @router.post("/user/{user_id}/save/{list_id}")

@@ -107,13 +107,14 @@ async def add_book_to_list(list_id: int, book: BookSavedSchema, db: AsyncSession
     
     return {"message": "Book added to list successfully"}
 
-async def delete_book_from_list(list_id: int, book_id: int, db: AsyncSession = Depends(get_db)):
+async def remove_book_from_list(list_id: int, book_id: str, db: AsyncSession = Depends(get_db)):
     try:
-        book = await db.get(BookSaved, book_id)
-        if not book or book.book_list_id != list_id:
+        book = await db.execute(select(BookSaved).filter(BookSaved.book_id == book_id))
+        book_obj = book.scalars().first()
+        if not book_obj or book_obj.book_list_id != list_id:    
             raise HTTPException(status_code=404, detail="Book not found.")
         
-        await db.delete(book)
+        await db.delete(book_obj)
         await db.commit()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
