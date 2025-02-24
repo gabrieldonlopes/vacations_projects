@@ -70,7 +70,7 @@ class ListSchema(BaseModel):
     description: Optional[str]
     likes: int
     visibility: bool
-    books: List[SearchBookSchema]
+    books: List[BookSavedSchema]
     class Config:
         from_attributes = True
 
