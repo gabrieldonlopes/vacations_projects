@@ -14,9 +14,13 @@ const BookPreview = ({ books }) => {
   const indexOfFirstBook = indexOfLastBook - booksPerPage;
   const currentBooks = books.slice(indexOfFirstBook, indexOfLastBook);
 
-  const handleBookClick = (bookId) => {
-    navigate(`/book/${bookId}`);  // Redireciona para a página do livro
-  };
+  const handleBookClick = (event, bookId) => {
+    if (event.button === 1 || event.ctrlKey || event.metaKey) {
+        window.open(`/book/${bookId}`, '_blank');
+    } else {
+        navigate(`/book/${bookId}`);
+    }
+};
 
   return (
     <div className="w-full max-w-5xl p-6 mt-4 animate-fade-in">
@@ -26,7 +30,9 @@ const BookPreview = ({ books }) => {
           <div
             key={book.id}
             className="border border-gray-300 rounded-lg p-4 shadow-lg flex flex-col items-center transition-transform hover:scale-105 cursor-pointer"
-            onClick={() => handleBookClick(book.id)}  // Navega ao clicar no livro
+            onClick={(event) => handleBookClick(event, book.id)} 
+            onAuxClick={(event) => handleBookClick(event, book.id)}
+            role="button"
           >
             {book.volumeInfo_imageLinks_thumbnail ? (
               <img

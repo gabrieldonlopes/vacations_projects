@@ -64,21 +64,41 @@ const ProfilePage = () => {
                     </div>
                 </div>
                 <div>
-                <h2 className="text-2xl font-bold text-white mb-4">Listas Criadas</h2>
-                    <hr className='opacity-50'></hr>
+                    <h2 className="text-2xl font-bold text-white mb-4">Listas Criadas</h2>
+                    <hr className="opacity-50 mb-4" />
                     <div>
-                    {createdLists?.length > 0 ? (
-                        createdLists.map((list) => <ListPreview list={list} />)
-                    ) : (
-                        <p className="text-gray-400">Nenhuma lista criada.</p>
-                    )}
+                        {createdLists?.length > 0 ? (
+                            createdLists.map((list) => (
+                                <ListPreview key={list.list_id} list={list} />
+                            ))
+                        ) : (
+                            <p className="text-gray-400">Nenhuma lista criada.</p>
+                        )}
                     </div>
-                    <h2 className="text-2xl font-bold text-white mb-4">Listas Salvas</h2>
-                    <hr className='opacity-50'></hr>
-                    <h2 className="text-2xl font-bold text-white mb-4">Livros Salvos</h2>
-                    <hr className='opacity-50'></hr>
 
+                    <h2 className="text-2xl font-bold text-white mt-8 mb-4">Listas Salvas</h2>
+                    <hr className="opacity-50 mb-4" />
+                    <div>
+                        {savedLists?.length > 0 ? (
+                            savedLists.map((list) => (
+                                <ListPreview key={list.list_id} list={list} />
+                            ))
+                        ) : (
+                            <p className="text-gray-400">Nenhuma lista salva.</p>
+                        )}
+                    </div>
 
+                    <h2 className="text-2xl font-bold text-white mt-8 mb-4">Livros Salvos</h2>
+                    <hr className="opacity-50 mb-4" />
+                    <div>
+                        {savedBooks?.length > 0 ? (
+                            savedBooks.map((book) => (
+                                <BookPreview key={book.book_id} book={book} />
+                            ))
+                        ) : (
+                            <p className="text-gray-400">Nenhum livro salvo.</p>
+                        )}
+                    </div>
                 </div>
                 <div className="flex flex-col md:flex-row justify-center mt-8 text-center gap-6">
                     <button

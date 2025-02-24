@@ -41,9 +41,8 @@ const ListSelectionModal = ({ isOpen, onClose, bookData }) => {
             contentLabel="Selecione uma Lista"
             className="modal-content bg-gray-500 rounded-lg shadow-xl p-6 mx-4 w-full max-w-md relative"
             overlayClassName="modal-overlay fixed inset-0 bg-opacity-75 flex items-center justify-center p-4"
-            closeTimeoutMS={200} // Tempo para fechar o modal (em milissegundos)
+            closeTimeoutMS={200} 
         >
-            {/* Botão de fechar */}
             <button
                 onClick={onClose}
                 className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition-colors"
