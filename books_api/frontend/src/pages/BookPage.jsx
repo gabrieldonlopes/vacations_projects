@@ -4,6 +4,9 @@ import { get_book } from '../api/api_book.js';
 import { get_list_preview_for_user,add_book_to_list, get_list_preview_for_book } from '../api/api_list.js';
 import Modal from "react-modal";
 import { AuthContext,AuthProvider } from '../contexts/AuthContext.jsx';
+import { toast } from "react-toastify";
+import Header from '../components/Header.jsx';
+
 Modal.setAppElement('#root'); // Substitua '#root' pelo ID do elemento raiz do seu app
 
 const ListSelectionModal = ({ isOpen, onClose, bookData }) => {
@@ -27,7 +30,7 @@ const ListSelectionModal = ({ isOpen, onClose, bookData }) => {
             await add_book_to_list(list_id, bookData);
             onClose(); // Fecha o modal após adicionar o livro
         } catch (error) {
-            console.error("Erro ao adicionar livro à lista:", error);
+            toast.error("Erro ao adicionar livro à lista:", error);
         }
     };
 
@@ -50,10 +53,8 @@ const ListSelectionModal = ({ isOpen, onClose, bookData }) => {
                 </svg>
             </button>
 
-            {/* Título do modal */}
             <h2 className="text-2xl font-bold text-white mb-6">Selecione uma Lista</h2>
 
-            {/* Lista de listas */}
             <ul className="space-y-4">
                 {lists.map((list) => (
                     <li
@@ -76,9 +77,9 @@ const BookPage = () => {
     const [isListSelectionModalOpen, setListSelectionModalOpen] = useState(false);
 
     const bookData = {
-        id: book?.id,
-        title: book?.title,
-        book_thumbnail: book?.volumeInfo_imageLinks_thumbnail,
+        book_id: String(book?.id || ""),
+        book_title: book?.title || "",
+        book_thumbnail: book?.volumeInfo?.imageLinks?.large || "",
     };
 
     useEffect(() => {
@@ -113,7 +114,8 @@ const BookPage = () => {
     }
 
     return (
-        <div className="min-h-screen py-10 px-6">
+        <div className="min-h-screen py-30 px-6">
+            <Header />
             <div className="max-w-6xl bg-gray-800 mx-auto p-8 rounded-lg shadow-lg">
                 <div className="flex flex-col md:flex-row items-center">
                     <div className="md:w-1/3 mb-6 md:mb-0">

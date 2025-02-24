@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { search_book } from '../api/api_book.js';
 import BookPreview from '../components/BookPreview';
-  
+import Header from '../components/Header';
 const SearchPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -27,42 +27,8 @@ const SearchPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center">
-      <header className="w-full bg-gray-800 text-white py-4 px-6 flex justify-between items-center fixed top-0">
-        <h2 className="text-xl font-semibold">BookShelf</h2>
-        <div>
-          {user ? (
-            <>
-              <button 
-                className="px-4 py-2 bg-gray-700 text-white rounded-lg mr-4 hover:bg-gray-600"
-                onClick={() => navigate('/profile')}
-              >
-                Profile
-              </button>
-              <button 
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                onClick={logout}
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <button 
-                className="px-4 py-2 bg-gray-700 text-white rounded-lg mr-4 hover:bg-gray-600"
-                onClick={() => navigate('/login')}
-              >
-                Sign In
-              </button>
-              <button 
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                onClick={() => navigate('/register')}
-              >
-                Sign Up
-              </button>
-            </>
-          )}
-        </div>
-      </header>
+      <Header />
+
 
       <div className="flex flex-col justify-center items-center flex-grow text-center px-6">
         <h1 className="text-4xl font-bold mb-6">Pesquise pelo Livro ou Autor que deseja ler</h1>

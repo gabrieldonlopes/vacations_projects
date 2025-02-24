@@ -4,7 +4,7 @@ import { AuthContext,AuthProvider } from '../contexts/AuthContext.jsx';
 import ListPreview  from '../components/ListPreview.jsx';
 import { toast } from "react-toastify";
 import { get_list_preview_for_user } from '../api/api_list.js';
-
+import Header from '../components/Header.jsx';
 const ProfilePage = () => {
     const { user, logout } = useContext(AuthContext);
     const navigate = useNavigate();
