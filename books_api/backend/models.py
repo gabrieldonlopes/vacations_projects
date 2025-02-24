@@ -49,7 +49,7 @@ class BookList(Base):
 class BookSaved(Base):  # Essa tabela guarda os livros salvos em uma estante
     __tablename__ = "books_saved"
 
-    saved_book_id = Column(Integer, primary_key=True, index=True)
+    saved_book_id = Column(Integer, primary_key=True, index=True) # TODO: mudar o nome dessa coluna (confuso)
     book_list_id = Column(Integer, ForeignKey("book_lists.list_id"), index=True)
     book_id = Column(String, index=True)
     book_title = Column(String, index=True)

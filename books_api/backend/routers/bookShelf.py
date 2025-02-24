@@ -78,7 +78,7 @@ async def delete_list_endpoint(list_id: int, db: AsyncSession = Depends(get_db))
     return await handle_request(delete_list, list_id, db)
 
 #TODO: verificação de usuário ao alterar uma lista
-@router.post("/list/{list_id}/add", response_model=ListSchema)
+@router.post("/list/{list_id}/add")
 async def add_book_to_list_endpoint(list_id: int, book: BookSavedSchema, db: AsyncSession = Depends(get_db)):
     return await handle_request(add_book_to_list, list_id, book, db)
 

@@ -48,8 +48,12 @@ class BookSchema(BaseModel):
     pageCount: Optional[int]
     categories: List[str]
     imageLinks_large: Optional[str]
+    imageLinks_thumbnail: Optional[str]
     language: Optional[str]
     industryIdentifiers: Optional[List[dict]]
+    averageRating: Optional[float]
+    class Config:
+        from_attributes = True
 
 class BookSavedSchema(BaseModel): # tira necessidade de fazer uma chamada da api
     book_id: str

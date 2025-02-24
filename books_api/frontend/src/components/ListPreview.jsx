@@ -1,9 +1,7 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from "../contexts/AuthContext";
 
 const ListPreview = ({ list }) => {
-    const { user } = AuthContext(); // usar para quando o usuário quiser adicionar livro
     const navigate = useNavigate();  // Para navegação
     
     if (!list) {

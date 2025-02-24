@@ -92,8 +92,11 @@ async def save_list(user_id: int, list_id: int, db: AsyncSession = Depends(get_d
     return {"message": "List saved successfully"}
 
 async def add_book_to_list(list_id: int, book: BookSavedSchema, db: AsyncSession = Depends(get_db)):
-    try:
-        db_book = BookSaved(book_id=book.book_id, book_list_id=list_id)
+    try: # TODO: pensar numa forma mais inteligente de fazer essa verificação
+        db_book = BookSaved(
+        book_list_id=list_id, book_id=book.book_id,
+        book_title=book.book_title, book_thumbnail=book.book_thumbnail
+        )
         db.add(db_book)
         await db.commit()
     except Exception as e:

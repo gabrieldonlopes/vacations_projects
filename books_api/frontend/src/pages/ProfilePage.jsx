@@ -17,7 +17,7 @@ const ProfilePage = () => {
     // TODO: resolver isso
     useEffect(() => {
         if (!user) {
-            navigate('/');
+            navigate('/login');
             return null;
         } else {
             get_list_preview_for_user(user.user_id).then((response) => {

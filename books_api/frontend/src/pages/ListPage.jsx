@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { get_list, get_books_from_list,add_book_to_list, delete_book_from_list } from "../api/api_list";
+import { useParams,useNavigate } from "react-router-dom";
+import { get_list, get_books_from_list,add_book_to_list, remove_book_from_list } from "../api/api_list";
 import { get_user_by_id } from "../api/api_auth";
 import BookPreview from "../components/BookPreview"; // Importe o componente BookPreview ou BookSavedPreview
+import { AuthContext } from "../contexts/AuthContext";
 
 const ListPage = () => {
+    //const { user } = AuthContext(); // usar para quando o usuário quiser adicionar livro
     const { list_id } = useParams();  // Obtém o list_id da URL
     const [list, setList] = useState(null);
     const [user, setUser] = useState(null);
     const [books, setBooks] = useState([]);
+    
     const [loading, setLoading] = useState(true);  // Estado de carregamento
+    const navigate = useNavigate();
 
     // fazer 3 chamadas de api para uma lista não me parece a melhor alternativa
     useEffect(() => {
@@ -110,7 +114,7 @@ const ListPage = () => {
                         adicionar livro
                     </button>
                     <button
-                        onClick={() => window.history.back()}
+                        onClick={() => navigate("/")}
                         className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition"
                     >
                         Voltar
