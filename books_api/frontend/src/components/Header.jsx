@@ -8,7 +8,7 @@ const Header = () => {
 
   return (
     <header className="w-full bg-gray-800 text-white py-4 px-6 flex justify-between items-center fixed top-0 left-0 right-0 z-50">
-      <h2 className="text-xl font-semibold cursor-pointer" onClick={() => navigate("/")}>BookShelf</h2>
+      <h2 className="text-xl font-semibold cursor-pointer" onClick={() => navigate("/")}>MyBiBlioteca</h2>
       <div>
         {user ? (
           <>
