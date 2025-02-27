@@ -38,7 +38,7 @@ try:
 
     filtered_data = items.reindex(columns=select_data, fill_value="N/A")
 
-    output_file = f"./books_api/tests_api/{filter_q}_data.csv"
+    output_file = f"./{filter_q}_data.csv"
     filtered_data.to_csv(output_file, index=False)
     print(f"Dados salvos em: {output_file}")
 

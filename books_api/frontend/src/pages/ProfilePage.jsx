@@ -99,7 +99,7 @@ const ProfilePage = () => {
                         </div>
                     </div>
                     <hr className="opacity-50 mb-4" />
-                    <div>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6'>
                         {createdLists?.length > 0 ? (
                             createdLists.map((list) => (
                                 <ListPreview key={list.list_id} list={list} />
@@ -111,7 +111,7 @@ const ProfilePage = () => {
 
                     <h2 className="text-2xl font-bold text-white mt-8 mb-4">Listas Salvas</h2>
                     <hr className="opacity-50 mb-4" />
-                    <div>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6'>
                         {savedLists?.length > 0 ? (
                             savedLists.map((list) => (
                                 <ListPreview key={list.list_id} list={list} />
@@ -123,7 +123,7 @@ const ProfilePage = () => {
 
                     <h2 className="text-2xl font-bold text-white mt-8 mb-4">Livros Salvos</h2>
                     <hr className="opacity-50 mb-4" />
-                    <div>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6'>
                         {savedBooks?.length > 0 ? (
                             savedBooks.map((book) => (
                                 <BookPreview key={book.book_id} book={book} />
@@ -139,7 +139,7 @@ const ProfilePage = () => {
                     isOpen={isModalOpen}
                     onClose={closeModal}
                 />
-
+                
                 <div className="flex flex-col md:flex-row justify-center mt-8 text-center gap-6">
                     <button
                         onClick={() => window.history.back()}

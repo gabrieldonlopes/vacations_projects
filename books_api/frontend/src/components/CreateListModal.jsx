@@ -5,6 +5,7 @@ import { create_list } from "../api/api_list";
 import { AuthContext } from "../contexts/AuthContext";
 
 const CreateListModal = ({ isOpen, onClose }) => {
+    //TODO: adicionar lógica de mudança de visibilidade da lista
     const [listData, setListData] = useState({
         name: "",
         description: "",

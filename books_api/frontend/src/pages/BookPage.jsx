@@ -28,6 +28,7 @@ const ListSelectionModal = ({ isOpen, onClose, bookData }) => {
     const handleAddBookToList = async (list_id) => {
         try {
             await add_book_to_list(list_id, bookData);
+            toast.success("Livro adicionado com sucesso!");
             onClose(); // Fecha o modal após adicionar o livro
         } catch (error) {
             toast.error("Erro ao adicionar livro à lista:", error);
@@ -78,7 +79,7 @@ const BookPage = () => {
     const bookData = {
         book_id: String(book?.id || ""),
         book_title: book?.title || "",
-        book_thumbnail: book?.volumeInfo?.imageLinks?.large || "",
+        book_thumbnail: book?.imageLinks_large || "",
     };
 
     useEffect(() => {
@@ -134,7 +135,9 @@ const BookPage = () => {
                     <div className="md:w-2/3 md:ml-8">
                         <h1 className="text-4xl font-bold text-white mb-6">{book.title}</h1>
                         <p className="text-xl text-gray-400 mb-4">Por: {book.authors.join(', ')}</p>
-                        <p className="text-lg text-gray-300 mb-6">{book.description || 'Descrição não disponível.'}</p>
+                        <p className="text-lg text-gray-300 mb-6">
+                            {book.description}
+                        </p>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-400">
                             <p><strong className="text-white">Editor:</strong> {book.publisher}</p>

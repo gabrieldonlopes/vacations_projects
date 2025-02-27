@@ -32,7 +32,7 @@ class UserInDB(UserResponse):
 class SearchBookSchema(BaseModel):
     id: str
     volumeInfo_title: str
-    volumeInfo_authors: List[str]
+    volumeInfo_authors: Optional[List[str]]
     volumeInfo_pageCount: Optional[int]
     volumeInfo_imageLinks_thumbnail: Optional[str] | None
     volumeInfo_averageRating: Optional[float]
