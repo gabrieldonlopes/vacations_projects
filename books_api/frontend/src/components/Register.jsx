@@ -25,7 +25,7 @@ const Register = () => {
         <>
         <ToastContainer position="top-right" autoClose={3000} />
             <div className="flex flex-col items-center justify-center min-h-screen">
-                <div className="w-full max-w-md p-8 rounded-lg shadow-2xl">
+                <div className="w-full max-w-md p-8 rounded-lg shadow-2xl bg-gray-800   ">
                     <h1 className="text-3xl font-bold text-center mb-6">
                         MyBiblioteca
                     </h1>

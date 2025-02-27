@@ -26,7 +26,7 @@ const ListPreview = ({ list }) => {
             role="button"  
             tabIndex={0}   
         >
-            <div className="grid grid-cols-3 gap-2 w-50 h-20 flex-shrink-0">
+            <div className="grid grid-cols-3 mb-3 gap-2 w-50 h-20 flex-shrink-0">
                 {thumbnail.slice(0, 3).map((thumbnail, index) => (
                     <img
                         key={index}

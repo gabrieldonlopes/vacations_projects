@@ -81,7 +81,7 @@ def get_book(id : str) -> BookSchema:
         "pageCount": volume_info.get("pageCount"),
         "categories": volume_info.get("categories", []),
         "imageLinks_large": volume_info.get("imageLinks", {}).get("large"),
-        "imageLinks_thumbnail": volume_info.get("imageLinks", {}).get("medium"), # tamanho da imagem não ficou legal com thumbnail
+        "imageLinks_thumbnail": volume_info.get("imageLinks", {}).get("thumbnail"), # tamanho da imagem não ficou legal com thumbnail
         "language": volume_info.get("language", "N/A"),
         "industryIdentifiers": volume_info.get("industryIdentifiers", []),
         "averageRating": volume_info.get("averageRating", "N/A"),
