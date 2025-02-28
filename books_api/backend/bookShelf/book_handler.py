@@ -54,7 +54,7 @@ def search_book_shelf(search_term: str) -> List[SearchBookSchema]:
                 row_cleaned = {key: (None if value == "N/A" else value) for key, value in row.items()}
                 data.append(SearchBookSchema(**row_cleaned))
             except Exception as e:
-                print(f"Erro ao validar o schema para o livro {row.get('id')}: {e}")
+                print(f"Erro ao validar o schema para o livro {row.get('id')}: {e}") # manter para futuros debuggs
 
         return data
 
