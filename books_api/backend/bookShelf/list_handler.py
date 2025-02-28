@@ -9,6 +9,7 @@ from backend.schemas import ListSchema, BookSavedSchema, ListCreate, ListPreview
 # TODO: ADICIONAR MENSAGENS EM CASO DE SUCESSO 
 async def transform_list_to_list_response(list_obj: ListSchema, db: AsyncSession) -> ListPreview:
     list_id = list_obj.list_id
+    owner_user_id = list_obj.owner_user_id
     name = list_obj.name
     description = list_obj.description
     visibility = list_obj.visibility
@@ -16,7 +17,7 @@ async def transform_list_to_list_response(list_obj: ListSchema, db: AsyncSession
     thumbnail = [book.book_thumbnail for book in await get_saved_books_for_list(list_id, db) if book.book_thumbnail][0:4]
     
     return ListPreview(
-        list_id=list_id, name=name, description=description, 
+        list_id=list_id, owner_user_id=owner_user_id, name=name, description=description, 
         thumbnail=thumbnail, visibility=visibility
     )
 
@@ -43,13 +44,22 @@ async def get_lists_for_user(user_id: int, db: AsyncSession = Depends(get_db)) -
     lists = result.scalars().all()
     return [await transform_list_to_list_response(list_obj, db) for list_obj in lists]
 
-async def get_lists_for_book(saved_book_id: int, db: AsyncSession = Depends(get_db)) -> List[ListPreview]:
-    book = await db.get(BookSaved, saved_book_id)
-    if not book:
+async def get_lists_for_book(book_id: str, db: AsyncSession = Depends(get_db)) -> List[ListPreview]:
+    result = await db.execute(select(BookSaved).filter(BookSaved.book_id == book_id))
+    books_saved = result.scalars().all()
+    if not books_saved:
         return []
-    result = await db.execute(select(BookList).filter(BookList.list_id == book.book_list_id))
-    lists = result.scalars().all()
-    return [await transform_list_to_list_response(list_obj, db) for list_obj in lists]
+    
+    book_list_ids = [b.book_list_id for b in books_saved]
+    result = await db.execute(select(BookList).filter(BookList.list_id.in_(book_list_ids)))
+    book_lists = result.scalars().all()
+
+    lists = []
+    for book_list in book_lists:
+        list_preview = await transform_list_to_list_response(book_list, db)
+        lists.append(list_preview)
+
+    return lists
 
 async def get_saved_lists(user_id: int, db: AsyncSession = Depends(get_db)) -> List[ListPreview]:
     result = await db.execute(select(SavedLists).filter(SavedLists.user_id == user_id))

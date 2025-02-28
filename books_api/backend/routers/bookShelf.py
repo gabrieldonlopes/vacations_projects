@@ -59,7 +59,7 @@ async def get_lists_for_user_endpoint(user_id: int, db: AsyncSession = Depends(g
 
 
 @router.get("/book/{book_id}/lists", response_model=List[ListPreview])
-async def get_lists_for_book_endpoint(book_id: int, db: AsyncSession = Depends(get_db)):
+async def get_lists_for_book_endpoint(book_id: str, db: AsyncSession = Depends(get_db)):
     return await handle_request(get_lists_for_book, book_id, db)
 
 

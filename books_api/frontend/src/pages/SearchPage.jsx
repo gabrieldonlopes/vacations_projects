@@ -8,8 +8,7 @@ const SearchPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false); // Estado para mostrar carregamento
-  const { user, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+
 //TODO : ADICIONAR TRATAMENTO DE EXCEÇÃO PARA HTTP EXCEPTION 500
   const handleForm = async (event) => {
     event.preventDefault();

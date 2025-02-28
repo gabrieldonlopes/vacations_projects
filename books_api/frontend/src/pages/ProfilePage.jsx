@@ -44,7 +44,7 @@ const ProfilePage = () => {
 
     const handleLogout = () => {
         logout();
-        navigate('/login');
+        navigate('/');
         toast.success("Logged out successfully");
     };
 
@@ -134,7 +134,6 @@ const ProfilePage = () => {
                     </div>
                 </div>
 
-                {/* Modal para criar nova lista */}
                 <CreateListModal
                     isOpen={isModalOpen}
                     onClose={closeModal}

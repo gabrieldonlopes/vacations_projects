@@ -2,11 +2,9 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { get_list, add_book_to_list, remove_book_from_list } from "../api/api_list";
 import { get_user_by_id } from "../api/api_auth";
-import { AuthContext } from "../contexts/AuthContext";
 import Modal from "react-modal";
 import { toast } from "react-toastify";
 import Header from "../components/Header";
-import "react-toastify/dist/ReactToastify.css";
 
 const ListPage = () => {
     const { list_id } = useParams();
@@ -35,7 +33,6 @@ const ListPage = () => {
                 }
             } catch (error) {
                 if (error.name !== "AbortError") {
-                    console.error("Erro ao carregar os dados:", error);
                     toast.error("Erro ao carregar a lista. Tente novamente mais tarde.");
                     setError("Erro ao carregar a lista.");
                 }

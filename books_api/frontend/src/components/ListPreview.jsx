@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import Modal from "react-modal";
 import { toast } from "react-toastify";
 import { delete_list } from "../api/api_list";
+import { AuthContext } from '../contexts/AuthContext.jsx';
 
 const ListPreview = ({ list, onDelete }) => {
     const navigate = useNavigate();
     const [selectedList, setSelectedList] = useState(null);
     const [isModalOpen, setModalOpen] = useState(false);
-
     if (!list) {
         return <p className="text-gray-400">Lista inválida.</p>;
     }
@@ -79,7 +79,6 @@ const ListPreview = ({ list, onDelete }) => {
                         : list.description || "Sem descrição"}
                 </p>
             </div>
-
             <button
                 onClick={(e) => {
                     e.stopPropagation();
@@ -96,9 +95,8 @@ const ListPreview = ({ list, onDelete }) => {
                 }}
             >
                 ✕
-            </button>
+            </button>                
 
-            {/* Modal de Confirmação */}
             <Modal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}

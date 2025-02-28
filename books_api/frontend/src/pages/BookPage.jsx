@@ -1,85 +1,43 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { get_book } from '../api/api_book.js';
-import { get_list_preview_for_user,add_book_to_list, get_list_preview_for_book } from '../api/api_list.js';
-import Modal from "react-modal";
-import { AuthContext,AuthProvider } from '../contexts/AuthContext.jsx';
+import ListSelectionModal from '../components/ListSelectionModal.jsx';
+import ListPreview from '../components/ListPreview.jsx';
 import { toast } from "react-toastify";
 import Header from '../components/Header.jsx';
+import { get_list_preview_for_book } from '../api/api_list.js';
 
-Modal.setAppElement('#root'); // Substitua '#root' pelo ID do elemento raiz do seu app
-
-const ListSelectionModal = ({ isOpen, onClose, bookData }) => {
-    const [lists, setLists] = useState([]);
-    const { user } = useContext(AuthContext);
-
-    useEffect(() => {
-        const fetchLists = async () => {
-            try {
-                const data = await get_list_preview_for_user(user.user_id);
-                setLists(data);
-            } catch (error) {
-                console.error("Erro ao carregar listas:", error);
-            }
-        };
-        fetchLists();
-    }, [user.user_id]);
-
-    const handleAddBookToList = async (list_id) => {
-        try {
-            await add_book_to_list(list_id, bookData);
-            toast.success("Livro adicionado com sucesso!");
-            onClose(); // Fecha o modal após adicionar o livro
-        } catch (error) {
-            toast.error("Erro ao adicionar livro à lista:", error);
-        }
-    };
-
-    return (
-        <Modal
-            isOpen={isOpen}
-            onRequestClose={onClose}
-            contentLabel="Selecione uma Lista"
-            className="modal-content bg-gray-500 rounded-lg shadow-xl p-6 mx-4 w-full max-w-md relative"
-            overlayClassName="modal-overlay fixed inset-0 bg-opacity-75 flex items-center justify-center p-4"
-            closeTimeoutMS={200} 
-        >
-            <button
-                onClick={onClose}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition-colors"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-
-            <h2 className="text-2xl font-bold text-white mb-6">Selecione uma Lista</h2>
-
-            <ul className="space-y-4">
-                {lists.map((list) => (
-                    <li
-                        key={list.list_id}
-                        onClick={() => handleAddBookToList(list.list_id)}
-                        className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg cursor-pointer transition-colors"
-                    >
-                        <p className="text-lg font-medium text-white">{list.name}</p>
-                        <p className="text-sm text-gray-400">{list.description || "Sem descrição"}</p>
-                    </li>
-                ))}
-            </ul>
-        </Modal>
-    );
-};
 const BookPage = () => {
     const { book_id } = useParams();
     const [book, setBook] = useState(null);
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [isListSelectionModalOpen, setListSelectionModalOpen] = useState(false);
+    const [bookLists, setBookLists] = useState([]);
+    const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false); // Estado para controlar a descrição
 
     const bookData = {
         book_id: String(book?.id || ""),
         book_title: book?.title || "",
         book_thumbnail: book?.imageLinks_large || "",
+    };
+
+    const handleBack = () => {
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            navigate('/');
+        }
+    };
+
+    // Função para buscar as listas do livro
+    const fetchLists = async () => {
+        try {
+            const data = await get_list_preview_for_book(book_id);
+            setBookLists(data);
+        } catch (error) {
+            console.error("Erro ao carregar listas:", error);
+        }
     };
 
     useEffect(() => {
@@ -88,56 +46,71 @@ const BookPage = () => {
                 const data = await get_book(book_id);
                 setBook(data);
             } catch (error) {
-                console.error("Erro ao carregar livro:", error);
+                toast.error("Erro ao carregar livro:", error);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchBook();
+        fetchLists(); // Busca as listas ao carregar a página
     }, [book_id]);
+
+    // Função para atualizar as listas após adicionar o livro
+    const handleAddBookToList = async () => {
+        await fetchLists(); // Atualiza as listas exibidas
+        setListSelectionModalOpen(false); // Fecha o modal
+    };
 
     if (loading) {
         return (
-            <div className="min-h-screen flex justify-center items-center">
+            <div className="min-h-screen flex justify-center items-center bg-gray-900">
                 <div className="text-center">
                     <div className="spinner-border animate-spin inline-block w-12 h-12 border-4 border-t-4 border-blue-500 rounded-full" role="status">
                     </div>
-                    <p className="text-2xl font-semibold mt-4">Carregando informações do livro...</p>
+                    <p className="text-2xl font-semibold mt-4 text-white">Carregando informações do livro...</p>
                 </div>
             </div>
         );
     }
 
     if (!book) {
-        return <div className="text-center text-2xl text-gray-700">Livro não encontrado.</div>;
+        return <div className="min-h-screen flex justify-center items-center bg-gray-900 text-2xl text-gray-400">Livro não encontrado.</div>;
     }
 
     return (
-        <div className="min-h-screen py-30 px-6">
+        <div className="min-h-screen bg-gray-900 py-30 px-4 sm:px-6 lg:px-8">
             <Header />
-            <div className="max-w-6xl bg-gray-800 mx-auto p-8 rounded-lg shadow-lg">
-                <div className="flex flex-col md:flex-row items-center">
-                    <div className="md:w-1/3 mb-6 md:mb-0">
+            <div className="max-w-7xl mx-auto bg-gray-800 p-8 rounded-lg shadow-2xl">
+                <div className="flex flex-col md:flex-row items-start space-y-8 md:space-y-0 md:space-x-8">
+                    <div className="md:w-1/3 w-full">
                         <img
                             src={book.imageLinks_large}
                             alt={book.title}
-                            className="w-full h-auto object-cover rounded-lg shadow-md"
+                            className="w-full h-auto rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300"
                         />
                         <button
-                            className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+                            className="mt-6 w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-300"
                             onClick={() => setListSelectionModalOpen(true)}
                         >
-                            Adicionar a lista
+                            Adicionar à Lista
                         </button>
                     </div>
 
-                    <div className="md:w-2/3 md:ml-8">
-                        <h1 className="text-4xl font-bold text-white mb-6">{book.title}</h1>
-                        <p className="text-xl text-gray-400 mb-4">Por: {book.authors.join(', ')}</p>
-                        <p className="text-lg text-gray-300 mb-6">
-                            {book.description}
-                        </p>
+                    <div className="md:w-2/3 w-full">
+                        <h1 className="text-4xl font-bold text-white mb-4">{book.title}</h1>
+                        <p className="text-xl text-gray-400 mb-6">Por: {book.authors.join(', ')}</p>
+                        <div className="mb-8">
+                            <p className={`text-lg text-gray-300 leading-relaxed ${!isDescriptionExpanded ? 'line-clamp-3' : ''}`}>
+                                {book.description}
+                            </p>
+                            <button
+                                className="text-blue-500 hover:text-blue-400 mt-2 focus:outline-none"
+                                onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                            >
+                                {isDescriptionExpanded ? "Ver menos" : "Ver mais"}
+                            </button>
+                        </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-400">
                             <p><strong className="text-white">Editor:</strong> {book.publisher}</p>
@@ -149,10 +122,24 @@ const BookPage = () => {
                     </div>
                 </div>
 
-                <div className="mt-8 text-center">
+                <div className="mt-12">
+                    <h2 className="text-2xl font-bold text-white mb-6">Listas com esse Livro</h2>
+                    <hr className="border-gray-700 mb-8" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {bookLists?.length > 0 ? (
+                            bookLists.map((list) => (
+                                <ListPreview key={list.list_id} list={list} />
+                            ))
+                        ) : (
+                            <p className="text-gray-400">Nenhuma lista encontrada.</p>
+                        )}
+                    </div>
+                </div>
+
+                <div className="mt-12 text-center">
                     <button
-                        onClick={() => window.history.back()}
-                        className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition"
+                        onClick={handleBack}
+                        className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors duration-300"
                     >
                         Voltar
                     </button>
@@ -163,6 +150,7 @@ const BookPage = () => {
                 isOpen={isListSelectionModalOpen}
                 onClose={() => setListSelectionModalOpen(false)}
                 bookData={bookData}
+                onAddBookToList={handleAddBookToList} // Passa a função para atualizar as listas
             />
         </div>
     );

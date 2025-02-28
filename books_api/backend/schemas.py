@@ -84,6 +84,7 @@ class ListCreate(BaseModel):
 
 class ListPreview(BaseModel):
     list_id: int
+    owner_user_id: int
     name: str
     description: Optional[str]
     thumbnail: Optional[List[str]]
