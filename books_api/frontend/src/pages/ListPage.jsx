@@ -14,39 +14,32 @@ const ListPage = () => {
     const [error, setError] = useState(null);
     const [isModalOpen, setModalOpen] = useState(false);
     const [selectedBook, setSelectedBook] = useState(null);
+    const [userData, setUserData] = useState(null); // Corrigido aqui
     const navigate = useNavigate();
-
     const { user } = useContext(AuthContext);
 
     useEffect(() => {
         Modal.setAppElement("#root"); // Configuração do Modal
 
-        const abortController = new AbortController();
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const listData = await get_list(list_id, { signal: abortController.signal });
+                const listData = await get_list(list_id);
                 setList(listData);
 
                 if (listData) {
-                    const userData = await get_user_by_id(listData.owner_user_id, { signal: abortController.signal });
-                    setUser(userData);
+                    const ownerData = await get_user_by_id(listData.owner_user_id);
+                    setUserData(ownerData); // Define o userData com os dados do criador da lista
                 }
             } catch (error) {
-                if (error.name !== "AbortError") {
-                    toast.error("Erro ao carregar a lista. Tente novamente mais tarde.");
-                    setError("Erro ao carregar a lista.");
-                }
+                toast.error("Erro ao carregar a lista. Tente novamente mais tarde.");
+                setError("Erro ao carregar a lista.");
             } finally {
                 setLoading(false);
             }
         };
 
         fetchData();
-
-        return () => {
-            abortController.abort();
-        };
     }, [list_id]);
 
     const handleBookClick = (bookId) => {
@@ -76,13 +69,12 @@ const ListPage = () => {
     };
 
     const confirmRemoveBook = async () => {
-        if (selectedBook) {
-            await handleRemoveBook(selectedBook.book_id);
-        }
+        if (!selectedBook) return;
+        await handleRemoveBook(selectedBook.book_id);
         closeModal();
     };
 
-    if (loading) {''
+    if (loading) {
         return (
             <div className="min-h-screen flex justify-center items-center">
                 <div className="text-center">
@@ -103,11 +95,11 @@ const ListPage = () => {
 
     return (
         <div className="min-h-screen py-30 px-6">
-            <Header />
+            <Header />      
             <div className="max-w-6xl mx-auto p-8 rounded-lg shadow-lg bg-gray-800">
                 <h1 className="text-3xl font-bold mb-4 text-white">{list.name}</h1>
                 <p className="text-gray-400 mb-4">{list.description}</p>
-                <p className="text-gray-400 mb-4">Criada por: {user ? user.username : "Usuário desconhecido"}</p>
+                <p className="text-gray-400 mb-4">Criada por: {userData ? userData.username : "Usuário desconhecido"}</p> {/* Corrigido aqui */}
 
                 <div className="flex gap-4 mb-6">
                     <p className="text-gray-300">
@@ -119,7 +111,7 @@ const ListPage = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                    {Array.isArray(list.books) && list.books.length > 0 ? (
+                    {list.books && Array.isArray(list.books) && list.books.length > 0 ? (
                         list.books.map((book) => (
                             <div
                                 key={book.book_id}
@@ -193,4 +185,4 @@ const ListPage = () => {
     );
 };
 
-export default ListPage;
+export default ListPage;    
