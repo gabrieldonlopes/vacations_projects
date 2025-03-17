@@ -69,7 +69,9 @@ const ListSelectionModal = ({ isOpen, onClose, bookData, onAddBookToList }) => {
                             className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg cursor-pointer transition-colors"
                         >
                             <p className="text-lg font-medium text-white">{list.name}</p>
-                            <p className="text-sm text-gray-300">{list.description || "Sem descrição"}</p>
+                            <p className="text-sm text-gray-300">
+                                {list.description && list.description.length > 40 ? `${list.description.slice(0, 40)}...`
+                                : list.description || "Sem descrição"}</p>
                         </li>
                     ))
                 ) : (

@@ -58,10 +58,12 @@ const BookPage = () => {
 
     // Função para atualizar as listas após adicionar o livro
     const handleAddBookToList = async () => {
-        await fetchLists(); // Atualiza as listas exibidas
+        await fetchLists(); // Atualiza as listas exibidas  
         setListSelectionModalOpen(false); // Fecha o modal
     };
-
+    const handleDeleteList = (listId) => {
+        setBookLists(bookLists.filter(list => list.list_id !== listId)); // Remove a lista excluída do estado
+    };
     if (loading) {
         return (
             <div className="min-h-screen flex justify-center items-center bg-gray-900">
@@ -128,7 +130,7 @@ const BookPage = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {bookLists?.length > 0 ? (
                             bookLists.map((list) => (
-                                <ListPreview key={list.list_id} list={list} />
+                                <ListPreview key={list.list_id} list={list} onDelete={handleDeleteList}  />
                             ))
                         ) : (
                             <p className="text-gray-400">Nenhuma lista encontrada.</p>

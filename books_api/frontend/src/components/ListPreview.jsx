@@ -81,8 +81,8 @@ const ListPreview = ({ list, onDelete }) => {
             <div className="ml-4 flex-1">
                 <p className="text-white font-bold">{list.name || "Sem nome"}</p>
                 <p className="text-gray-400 text-sm">
-                    {list.description && list.description.length > 40
-                        ? `${list.description.slice(0, 40)}...`
+                    {list.description && list.description.length > 10
+                        ? `${list.description.slice(0, 10)}...`
                         : list.description || "Sem descrição"}
                 </p>
             </div>
