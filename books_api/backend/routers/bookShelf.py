@@ -81,8 +81,8 @@ async def delete_list_endpoint(list_id: int, user: User = Depends(get_current_ac
 
 #TODO: verificação de usuário ao alterar uma lista
 @router.post("/list/{list_id}/add")
-async def add_book_to_list_endpoint(list_id: int, book: BookSavedSchema, db: AsyncSession = Depends(get_db)):
-    return await handle_request(add_book_to_list, list_id, book, db)
+async def add_book_to_list_endpoint(list_id: int, book: BookSavedSchema,user: User = Depends(get_current_active_user), db: AsyncSession = Depends(get_db)):
+    return await handle_request(add_book_to_list, list_id, book, user, db)
 
 
 @router.delete("/list/{list_id}/remove/{book_id}")

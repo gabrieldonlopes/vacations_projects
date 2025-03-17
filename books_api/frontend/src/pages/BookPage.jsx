@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { get_book } from '../api/api_book.js';
 import ListSelectionModal from '../components/ListSelectionModal.jsx';
@@ -6,7 +6,7 @@ import ListPreview from '../components/ListPreview.jsx';
 import { toast } from "react-toastify";
 import Header from '../components/Header.jsx';
 import { get_list_preview_for_book } from '../api/api_list.js';
-
+import { AuthContext } from '../contexts/AuthContext.jsx'; 
 const BookPage = () => {
     const { book_id } = useParams();
     const [book, setBook] = useState(null);
@@ -15,6 +15,8 @@ const BookPage = () => {
     const [isListSelectionModalOpen, setListSelectionModalOpen] = useState(false);
     const [bookLists, setBookLists] = useState([]);
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false); // Estado para controlar a descrição
+
+    const { token } = useContext(AuthContext);
 
     const bookData = {
         book_id: String(book?.id || ""),
@@ -152,6 +154,7 @@ const BookPage = () => {
                 isOpen={isListSelectionModalOpen}
                 onClose={() => setListSelectionModalOpen(false)}
                 bookData={bookData}
+                token={token}
                 onAddBookToList={handleAddBookToList} // Passa a função para atualizar as listas
             />
         </div>

@@ -122,8 +122,14 @@ async def save_list(user_id: int, list_id: int, db: AsyncSession = Depends(get_d
 
     return {"message": "List saved successfully"}
 
-async def add_book_to_list(list_id: int, book: BookSavedSchema, db: AsyncSession = Depends(get_db)):
-    try: # TODO: pensar numa forma mais inteligente de fazer essa verificação
+async def add_book_to_list(list_id: int, book: BookSavedSchema,user: User=Depends(get_current_active_user), db: AsyncSession = Depends(get_db)):
+    try:
+        # verificar se usuario é dono da lista
+        result = await db.execute(select(BookList).filter(BookList.list_id == list_id))
+        list_obj = result.scalars().first()
+        if not list_obj:    
+            raise HTTPException(status_code=404, detail="List not found.")  
+        await verify_owner_user(list=list_obj,user=user) #TODO: melhorar essa verificação para reduzir a quantidade de consultas
         db_book = BookSaved(
         book_list_id=list_id, book_id=book.book_id,
         book_title=book.book_title, book_thumbnail=book.book_thumbnail

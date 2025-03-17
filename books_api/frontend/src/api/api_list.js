@@ -17,7 +17,7 @@ const handleRequest = async (requestFunction, token = null) => {
 const get_list = (list_id) => handleRequest((config) => axios.get(`${API_URL}/list/${list_id}`, config));
 const get_list_preview_for_user = (user_id) => handleRequest((config) => axios.get(`${API_URL}/user/${user_id}/lists`, config)); //TODO: modificar essa função com inclusão de token
 const get_list_preview_for_book = (book_id) => handleRequest((config) => axios.get(`${API_URL}/book/${book_id}/lists`, config));
-const add_book_to_list = (list_id, book_data) => handleRequest((config) => axios.post(`${API_URL}/list/${list_id}/add`, book_data, config));
+const add_book_to_list = (list_id, book_data,token) => handleRequest((config) => axios.post(`${API_URL}/list/${list_id}/add`, book_data, config),token);
 const remove_book_from_list = (list_id, book_id,token) => handleRequest((config) => axios.delete(`${API_URL}/list/${list_id}/remove/${book_id}`, config),token);
 const get_books_from_list = (list_id) => handleRequest((config) => axios.get(`${API_URL}/list/${list_id}/books`, config));
 const save_list = (user_id, list_id) => handleRequest((config) => axios.post(`${API_URL}/user/${user_id}/save/${list_id}`, {}, config));

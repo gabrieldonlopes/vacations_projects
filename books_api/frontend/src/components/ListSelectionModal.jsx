@@ -7,7 +7,7 @@ import { ClipLoader } from 'react-spinners'; // Para o spinner de carregamento
 
 Modal.setAppElement('#root'); 
 
-const ListSelectionModal = ({ isOpen, onClose, bookData, onAddBookToList }) => {
+const ListSelectionModal = ({ isOpen, onClose, bookData,token, onAddBookToList }) => {
     const [lists, setLists] = useState([]);
     const [isLoading, setIsLoading] = useState(false); // Estado para controlar o carregamento
     const { user } = useContext(AuthContext);
@@ -28,7 +28,7 @@ const ListSelectionModal = ({ isOpen, onClose, bookData, onAddBookToList }) => {
     const handleAddBookToList = async (list_id) => {
         setIsLoading(true); // Ativa o estado de carregamento
         try {
-            await add_book_to_list(list_id, bookData);
+            await add_book_to_list(list_id, bookData,token);
             toast.success("Livro adicionado com sucesso!");
             onAddBookToList(); // Notifica o componente pai para atualizar as listas
             onClose(); // Fecha o modal
