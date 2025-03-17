@@ -75,11 +75,11 @@ async def get_saved_lists(user_id: int, db: AsyncSession = Depends(get_db)) -> L
     lists = result.scalars().all()
     return [await transform_list_to_list_response(list_obj, db) for list_obj in lists]
 
-async def create_list(list_data: ListCreate, db: AsyncSession = Depends(get_db)):
+async def create_list(list_data: ListCreate, user: User = Depends(get_current_active_user), db: AsyncSession = Depends(get_db)):
     existing_list = await db.execute(select(BookList).filter(BookList.name == list_data.name))
     if existing_list.scalars().first() == None:
         db_list = BookList(
-        owner_user_id=list_data.owner_user_id, name=list_data.name, 
+        owner_user_id=user.user_id, name=list_data.name, 
         description=list_data.description, visibility=list_data.visibility
          )
         db.add(db_list)
@@ -137,12 +137,15 @@ async def add_book_to_list(list_id: int, book: BookSavedSchema, db: AsyncSession
 
 async def remove_book_from_list(list_id: int, book_id: str, user: User = Depends(get_current_active_user),db: AsyncSession = Depends(get_db)): 
     try:
+        # verificar se usuario é dono da lista
         result = await db.execute(select(BookList).filter(BookList.list_id == list_id))
         list_obj = result.scalars().first()
         if not list_obj:    
-            raise HTTPException(status_code=404, detail="List not found.")
+            raise HTTPException(status_code=404, detail="List not found.")  
         await verify_owner_user(list=list_obj,user=user) #TODO: melhorar essa verificação para reduzir a quantidade de consultas
-        book = await db.execute(select(BookSaved).filter(BookSaved.book_id == book_id and BookSaved.book_list_id == list_id))
+
+        # verificar livro e remove-lo
+        book = await db.execute(select(BookSaved).filter(BookSaved.book_id == book_id and BookSaved.book_list_id == list_obj.list_id))
         book_obj = book.scalars().first()
         if not book_obj:    
             raise HTTPException(status_code=404, detail="Book not found.")

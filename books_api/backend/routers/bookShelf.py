@@ -71,8 +71,8 @@ async def get_books_from_list_endpoint(list_id: int, db: AsyncSession = Depends(
 
 
 @router.post("/list/create")
-async def create_list_endpoint(list_to_create: ListCreate, db: AsyncSession = Depends(get_db)):
-    return await handle_request(create_list, list_to_create, db)
+async def create_list_endpoint(list_to_create: ListCreate, user: User = Depends(get_current_active_user), db: AsyncSession = Depends(get_db)):
+    return await handle_request(create_list, list_to_create, user, db)
 
 
 @router.delete("/list/delete/{list_id}")

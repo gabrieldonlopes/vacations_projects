@@ -77,7 +77,6 @@ class ListSchema(BaseModel):
         from_attributes = True
 
 class ListCreate(BaseModel):
-    owner_user_id: int
     name: str
     description: Optional[str]
     visibility: bool

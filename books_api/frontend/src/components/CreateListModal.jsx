@@ -3,13 +3,13 @@ import { toast } from "react-toastify";
 import Modal from "react-modal";
 import { create_list } from "../api/api_list";
 import { AuthContext } from "../contexts/AuthContext";
-
 const CreateListModal = ({ isOpen, onClose }) => {
+    const { token } = useContext(AuthContext);
     const [listData, setListData] = useState({
         name: "",
         description: "",
+        visibility: true,
     });
-    const { user } = useContext(AuthContext);
 
     const resetForm = () => {
         setListData({
@@ -25,12 +25,7 @@ const CreateListModal = ({ isOpen, onClose }) => {
 
     const handleCreateList = async () => {
         try {
-            const response = await create_list({
-                owner_user_id: user.user_id,
-                name: listData.name,
-                description: listData.description,
-                visibility: true,
-            });
+            await create_list(listData,token);
             toast.success("Lista criada com sucesso!");
             
             closeModal(); // Fecha o modal após 1 segundo
