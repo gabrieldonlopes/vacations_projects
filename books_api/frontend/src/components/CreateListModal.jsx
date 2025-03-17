@@ -15,7 +15,8 @@ const CreateListModal = ({ isOpen, onClose }) => {
         setListData({
             name: "",
             description: "",
-        });
+            visibility: true,
+        }); 
     };
 
     const closeModal = () => {
@@ -24,6 +25,7 @@ const CreateListModal = ({ isOpen, onClose }) => {
     };
 
     const handleCreateList = async () => {
+        console.log("Dados da lista:", listData);
         try {
             await create_list(listData,token);
             toast.success("Lista criada com sucesso!");
