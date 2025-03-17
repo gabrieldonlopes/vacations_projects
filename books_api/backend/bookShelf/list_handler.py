@@ -21,7 +21,7 @@ async def transform_list_to_list_response(list_obj: ListSchema, db: AsyncSession
     owner_user_id = list_obj.owner_user_id
     name = list_obj.name
     description = list_obj.description
-    visibility = list_obj.visibility
+    visibility = list_obj.visibility    
     
     thumbnail = [book.book_thumbnail for book in await get_saved_books_for_list(list_id, db) if book.book_thumbnail][0:4]
     
@@ -112,7 +112,7 @@ async def delete_list(list_id: int, user: User = Depends(get_current_active_user
         raise HTTPException(status_code=500, detail=str(e))
 
 async def save_list(user_id: int, list_id: int, db: AsyncSession = Depends(get_db)):
-    db_list = await db.get(BookList, list_id)
+    db_list = await db.get(BookList, list_id) # modificar essa busca
     if not db_list:
         raise HTTPException(status_code=404, detail="List not found.")
     

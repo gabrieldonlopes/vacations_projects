@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import Modal from "react-modal";
 import { toast } from "react-toastify";
@@ -6,9 +6,11 @@ import { delete_list } from "../api/api_list";
 import { AuthContext } from '../contexts/AuthContext.jsx';
 
 const ListPreview = ({ list, onDelete }) => {
+    const { token,user } = useContext(AuthContext);
     const navigate = useNavigate();
     const [selectedList, setSelectedList] = useState(null);
     const [isModalOpen, setModalOpen] = useState(false);
+
     if (!list) {
         return <p className="text-gray-400">Lista inválida.</p>;
     }
@@ -16,6 +18,11 @@ const ListPreview = ({ list, onDelete }) => {
     const thumbnail = list.thumbnail || [];
 
     const handleListClick = (event, list_id) => {
+        // Verifica se o clique foi no botão de exclusão ou no modal
+        if (event.target.closest('button') || event.target.closest('.modal-content')) {
+            return; // Não faz nada se o clique foi no botão de exclusão ou no modal
+        }
+
         if (event.button === 1 || event.ctrlKey || event.metaKey) {
             window.open(`/list/${list_id}`, '_blank');
         } else {
@@ -35,9 +42,9 @@ const ListPreview = ({ list, onDelete }) => {
 
     const confirmDeleteList = async () => {
         try {
-            await delete_list(selectedList.list_id);
+            await delete_list(selectedList.list_id, token);
             toast.success("Lista excluída com sucesso!");
-            onDelete(selectedList.list_id); // Atualiza o estado no componente pai
+            onDelete(selectedList.list_id); // Chama a função onDelete para atualizar o estado no componente pai
         } catch (error) {
             toast.error("Erro ao excluir lista:", error);
         }
@@ -47,14 +54,13 @@ const ListPreview = ({ list, onDelete }) => {
     return (
         <div
             className="flex flex-row p-4 rounded-lg bg-gray-700 w-full max-w-sm relative items-center cursor-pointer hover:bg-gray-600 transition-colors group"
-            onClick={(event) => console.log("fui para uma lista!")/*handleListClick(event, list.list_id)*/}
-            onAuxClick={(event) => console.log("fui para uma lista!") /*handleListClick(event, list.list_id)*/}
+            onClick={(event) => handleListClick(event, list.list_id)}
+            onAuxClick={(event) => handleListClick(event, list.list_id)}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
-                    //handleListClick(e, list.list_id);
-                    console.log("fui para uma lista!")
+                    handleListClick(e, list.list_id);
                 }
             }}
         >
@@ -80,9 +86,10 @@ const ListPreview = ({ list, onDelete }) => {
                         : list.description || "Sem descrição"}
                 </p>
             </div>
+            
             <button
                 onClick={(e) => {
-                    e.stopPropagation();
+                    e.stopPropagation(); // Impede a propagação do evento de clique
                     openModal(list);
                 }}
                 className="absolute top-2 right-2 bg-red-500 text-white text-xs w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-700 transition-opacity opacity-0 group-hover:opacity-100"
@@ -90,13 +97,14 @@ const ListPreview = ({ list, onDelete }) => {
                 tabIndex={0}
                 onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
-                        e.stopPropagation();
+                        e.stopPropagation(); // Impede a propagação do evento de clique
                         openModal(list);
                     }
                 }}
+                style={{ display: user?.user_id === list?.owner_user_id ? "flex" : "none" }} // Condicional para mostrar o botão
             >
                 ✕
-            </button>                
+            </button>
 
             <Modal
                 isOpen={isModalOpen}

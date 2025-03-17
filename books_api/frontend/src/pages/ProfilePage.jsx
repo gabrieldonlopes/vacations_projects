@@ -5,14 +5,14 @@ import ListPreview from '../components/ListPreview.jsx';
 import CreateListModal from "../components/CreateListModal.jsx";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from 'react-toastify'; // Importe o ToastContainer
+import { ToastContainer } from 'react-toastify';
 import { get_list_preview_for_user } from '../api/api_list.js';
 
 const ProfilePage = () => {
     const { user, logout } = useContext(AuthContext);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar o modal
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [createdLists, setCreatedLists] = useState([]);
     const [savedLists, setSavedLists] = useState([]);
@@ -57,6 +57,11 @@ const ProfilePage = () => {
     const closeModal = () => {
         setIsModalOpen(false);
         refreshLists(); // Atualiza as listas após fechar o modal
+    };
+
+    // Função para lidar com a exclusão de uma lista
+    const handleDeleteList = (listId) => {
+        setCreatedLists(createdLists.filter(list => list.list_id !== listId)); // Remove a lista excluída do estado
     };
 
     if (loading) {
@@ -105,7 +110,11 @@ const ProfilePage = () => {
                     <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6'>
                         {createdLists?.length > 0 ? (
                             createdLists.map((list) => (
-                                <ListPreview key={list.list_id} list={list} />
+                                <ListPreview
+                                    key={list.list_id}
+                                    list={list}
+                                    onDelete={handleDeleteList} // Passa a função de callback
+                                />
                             ))
                         ) : (
                             <p className="text-gray-400">Nenhuma lista criada.</p>
@@ -155,7 +164,6 @@ const ProfilePage = () => {
                     >
                         Logout
                     </button>
-                    
                 </div>
             </div>
         </div>

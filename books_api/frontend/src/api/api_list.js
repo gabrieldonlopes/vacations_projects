@@ -36,5 +36,6 @@ export {
     remove_book_from_list,
     get_books_from_list,
     save_list,
-    get_saved_lists
+    get_saved_lists,
+    handleRequest
 };
