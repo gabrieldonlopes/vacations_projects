@@ -5,7 +5,6 @@ import { create_list } from "../api/api_list";
 import { AuthContext } from "../contexts/AuthContext";
 
 const CreateListModal = ({ isOpen, onClose }) => {
-    //TODO: adicionar lógica de mudança de visibilidade da lista
     const [listData, setListData] = useState({
         name: "",
         description: "",
@@ -32,15 +31,12 @@ const CreateListModal = ({ isOpen, onClose }) => {
                 description: listData.description,
                 visibility: true,
             });
-            if (response.success) {
-                toast.success("Lista criada com sucesso!");
-                closeModal();
-            } else {
-                toast.error("Erro ao criar a lista.");
-            }
-        } catch (error) {
-            console.error("Erro ao criar a lista:", error);
-            toast.error("Erro ao criar a lista.");
+            toast.success("Lista criada com sucesso!");
+            
+            closeModal(); // Fecha o modal após 1 segundo
+            
+        } catch (error) { // TODO: implementar melhor sistema de exibição de erros
+            toast.error("O nome da lista já existe!");
         }
     };
 
@@ -61,8 +57,6 @@ const CreateListModal = ({ isOpen, onClose }) => {
                         return;
                     }
                     await handleCreateList();
-                    resetForm();
-                    closeModal();   
                 }}
             >
                 <div className="mb-4">

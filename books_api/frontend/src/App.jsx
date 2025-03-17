@@ -6,7 +6,7 @@ import SearchPage from './pages/SearchPage.jsx';
 import BookPage from './pages/BookPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import ListPage from './pages/ListPage.jsx';
-import Login from './components/Login.jsx';
+import Login from './components/Login.jsx'; 
 import Register from './components/Register.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 
@@ -14,16 +14,15 @@ const App = () => {
     return (
         <Router>
             <AuthProvider>
-                <ToastContainer
+            <ToastContainer
+                    toastClassName="bg-gray-800 text-white rounded-lg shadow-lg p-4"
+                    bodyClassName="text-sm"
                     position="top-right"
                     autoClose={3000}
                     hideProgressBar={false}
-                    newestOnTop={false}
                     closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
                     pauseOnHover
+                    draggable
                 />
                 <Routes>
                     <Route path="/" element={<SearchPage />} />

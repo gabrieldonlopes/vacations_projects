@@ -4,6 +4,8 @@ import { AuthContext } from '../contexts/AuthContext.jsx';
 import ListPreview from '../components/ListPreview.jsx';
 import CreateListModal from "../components/CreateListModal.jsx";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from 'react-toastify'; // Importe o ToastContainer
 import { get_list_preview_for_user } from '../api/api_list.js';
 
 const ProfilePage = () => {
@@ -63,6 +65,7 @@ const ProfilePage = () => {
 
     return (
         <div className="min-h-screen py-10 px-6 relative">
+            <ToastContainer position="top-right" autoClose={3000} />
             <div className="max-w-6xl mx-auto p-10 rounded-lg shadow-lg bg-gray-800">
                 <div className="flex flex-col items-center md:flex-row md:items-start">
                     <div className="mb-6 md:mb-0 text-center">
@@ -151,6 +154,11 @@ const ProfilePage = () => {
                         onClick={handleLogout}
                     >
                         Logout
+                    </button>
+                    <button
+                        onClick={() => toast.success("fui clicado!")}
+                    >
+                        toast
                     </button>
                 </div>
             </div>

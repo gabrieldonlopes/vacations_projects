@@ -5,22 +5,23 @@ import { get_user_by_id } from "../api/api_auth";
 import Modal from "react-modal";
 import { toast } from "react-toastify";
 import Header from "../components/Header";
+import { AuthContext } from '../contexts/AuthContext.jsx';
 
 const ListPage = () => {
     const { list_id } = useParams();
     const [list, setList] = useState(null);
-    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setModalOpen] = useState(false);
     const [selectedBook, setSelectedBook] = useState(null);
     const navigate = useNavigate();
 
+    const { user } = useContext(AuthContext);
+
     useEffect(() => {
         Modal.setAppElement("#root"); // Configuração do Modal
 
         const abortController = new AbortController();
-
         const fetchData = async () => {
             try {
                 setLoading(true);
@@ -180,7 +181,7 @@ const ListPage = () => {
                 </Modal>
                 <div className="mt-8 text-center">
                     <button
-                        onClick={() => window.history.back()}
+                        onClick={() => {window.history.back()}}
                         className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition"
                     >
                         Voltar
