@@ -16,7 +16,7 @@ const ListPage = () => {
     const [selectedBook, setSelectedBook] = useState(null);
     const [userData, setUserData] = useState(null); // Corrigido aqui
     const navigate = useNavigate();
-    const { user } = useContext(AuthContext);
+    const { user, token } = useContext(AuthContext);
 
     useEffect(() => {
         Modal.setAppElement("#root"); // Configuração do Modal
@@ -48,7 +48,7 @@ const ListPage = () => {
 
     const handleRemoveBook = async (bookId) => {
         try {
-            await remove_book_from_list(list_id, bookId);
+            await remove_book_from_list(list_id, bookId,token);
             const updatedList = await get_list(list_id);
             setList(updatedList);
             toast.success("Livro removido com sucesso!");
