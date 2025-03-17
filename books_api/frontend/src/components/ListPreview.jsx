@@ -47,13 +47,14 @@ const ListPreview = ({ list, onDelete }) => {
     return (
         <div
             className="flex flex-row p-4 rounded-lg bg-gray-700 w-full max-w-sm relative items-center cursor-pointer hover:bg-gray-600 transition-colors group"
-            onClick={(event) => handleListClick(event, list.list_id)}
-            onAuxClick={(event) => handleListClick(event, list.list_id)}
+            onClick={(event) => console.log("fui para uma lista!")/*handleListClick(event, list.list_id)*/}
+            onAuxClick={(event) => console.log("fui para uma lista!") /*handleListClick(event, list.list_id)*/}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
-                    handleListClick(e, list.list_id);
+                    //handleListClick(e, list.list_id);
+                    console.log("fui para uma lista!")
                 }
             }}
         >

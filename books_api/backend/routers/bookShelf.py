@@ -6,6 +6,7 @@ from backend.schemas import (
     SearchBookSchema, BookSchema, ListCreate, ListPreview, 
     BookSavedSchema, ListComments, BookComments, ListSchema
 )
+from backend.auth.auth_handler import get_current_active_user
 from backend.bookShelf.book_handler import search_book_shelf, get_book
 from backend.bookShelf.list_handler import (
     get_list, get_lists_for_user, get_lists_for_book, get_saved_books_for_list,
@@ -17,6 +18,7 @@ from backend.bookShelf.comment_handler import (
     get_comments_for_book, create_comment_on_book, delete_comment_on_book
 )
 from backend.database import get_db
+from backend.models import User
 
 router = APIRouter()
 
@@ -74,8 +76,8 @@ async def create_list_endpoint(list_to_create: ListCreate, db: AsyncSession = De
 
 
 @router.delete("/list/delete/{list_id}")
-async def delete_list_endpoint(list_id: int, db: AsyncSession = Depends(get_db)):
-    return await handle_request(delete_list, list_id, db)
+async def delete_list_endpoint(list_id: int, user: User = Depends(get_current_active_user), db: AsyncSession = Depends(get_db)):
+    return await handle_request(delete_list, list_id, user, db)
 
 #TODO: verificação de usuário ao alterar uma lista
 @router.post("/list/{list_id}/add")

@@ -155,11 +155,7 @@ const ProfilePage = () => {
                     >
                         Logout
                     </button>
-                    <button
-                        onClick={() => toast.success("fui clicado!")}
-                    >
-                        toast
-                    </button>
+                    
                 </div>
             </div>
         </div>

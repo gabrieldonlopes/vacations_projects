@@ -4,9 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from backend.database import get_db
-from backend.models import BookList, BookSaved, SavedLists
-from backend.schemas import ListSchema, BookSavedSchema, ListCreate, ListPreview
+from backend.models import BookList, BookSaved, SavedLists,User
+from backend.schemas import ListSchema, BookSavedSchema, ListCreate, ListPreview, UserResponse
+
+from ..auth.auth_handler import get_current_active_user
 # TODO: ADICIONAR MENSAGENS EM CASO DE SUCESSO 
+
+
 async def transform_list_to_list_response(list_obj: ListSchema, db: AsyncSession) -> ListPreview:
     list_id = list_obj.list_id
     owner_user_id = list_obj.owner_user_id
@@ -79,13 +83,14 @@ async def create_list(list_data: ListCreate, db: AsyncSession = Depends(get_db))
     else:    
         raise HTTPException(status_code=400, detail="List name already registered.")
 
-async def delete_list(list_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_list(list_id: int, user: User = Depends(get_current_active_user), db: AsyncSession = Depends(get_db)): 
     try:
         result = await db.execute(select(BookList).filter(BookList.list_id == list_id))
         list_obj = result.scalars().first()
         if not list_obj:
-            raise HTTPException(status_code=404, detail="List not found.")
-        
+            raise HTTPException(status_code=404, detail="List not found.")  
+        elif user.user_id != list_obj.owner_user_id:  
+            raise HTTPException(status_code=500, detail="You're not the owner user.")
         await db.delete(list_obj)
         await db.commit()
         return {"message": "List deleted successfully"}
