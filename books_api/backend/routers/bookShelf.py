@@ -86,8 +86,8 @@ async def add_book_to_list_endpoint(list_id: int, book: BookSavedSchema, db: Asy
 
 
 @router.delete("/list/{list_id}/remove/{book_id}")
-async def remove_book_from_list_endpoint(list_id: int, book_id: str, db: AsyncSession = Depends(get_db)):
-    return await handle_request(remove_book_from_list, list_id, book_id, db)
+async def remove_book_from_list_endpoint(list_id: int, book_id: str,user: User = Depends(get_current_active_user), db: AsyncSession = Depends(get_db)):
+    return await handle_request(remove_book_from_list, list_id, book_id,user, db)
 
 
 @router.post("/user/{user_id}/save/{list_id}")

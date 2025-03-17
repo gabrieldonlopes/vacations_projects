@@ -2,6 +2,8 @@ from typing import List
 from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import delete
+
 
 from backend.database import get_db
 from backend.models import BookList, BookSaved, SavedLists,User
@@ -10,7 +12,10 @@ from backend.schemas import ListSchema, BookSavedSchema, ListCreate, ListPreview
 from ..auth.auth_handler import get_current_active_user
 # TODO: ADICIONAR MENSAGENS EM CASO DE SUCESSO 
 
-
+async def verify_owner_user(list: BookList,user: User = Depends(get_current_active_user)):
+    if user.user_id != list.owner_user_id:
+        raise HTTPException(status_code=403, detail="You're not the owner of the list.")
+    
 async def transform_list_to_list_response(list_obj: ListSchema, db: AsyncSession) -> ListPreview:
     list_id = list_obj.list_id
     owner_user_id = list_obj.owner_user_id
@@ -87,12 +92,20 @@ async def delete_list(list_id: int, user: User = Depends(get_current_active_user
     try:
         result = await db.execute(select(BookList).filter(BookList.list_id == list_id))
         list_obj = result.scalars().first()
+        
         if not list_obj:
             raise HTTPException(status_code=404, detail="List not found.")  
-        elif user.user_id != list_obj.owner_user_id:  
-            raise HTTPException(status_code=500, detail="You're not the owner user.")
+        
+        await verify_owner_user(list=list_obj, user=user)
+        
+        books = await db.execute(select(BookSaved).where(BookSaved.book_list_id == list_id))
+        books_obj = books.scalars().all()
+        for book in books_obj:
+            await db.delete(book)
+        
         await db.delete(list_obj)
         await db.commit()
+
         return {"message": "List deleted successfully"}
 
     except Exception as e:
@@ -122,8 +135,13 @@ async def add_book_to_list(list_id: int, book: BookSavedSchema, db: AsyncSession
     
     return {"message": "Book added to list successfully"}
 
-async def remove_book_from_list(list_id: int, book_id: str, db: AsyncSession = Depends(get_db)): 
+async def remove_book_from_list(list_id: int, book_id: str, user: User = Depends(get_current_active_user),db: AsyncSession = Depends(get_db)): 
     try:
+        result = await db.execute(select(BookList).filter(BookList.list_id == list_id))
+        list_obj = result.scalars().first()
+        if not list_obj:    
+            raise HTTPException(status_code=404, detail="List not found.")
+        await verify_owner_user(list=list_obj,user=user) #TODO: melhorar essa verificação para reduzir a quantidade de consultas
         book = await db.execute(select(BookSaved).filter(BookSaved.book_id == book_id and BookSaved.book_list_id == list_id))
         book_obj = book.scalars().first()
         if not book_obj:    
