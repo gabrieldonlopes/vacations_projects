@@ -89,6 +89,11 @@ class ListPreview(BaseModel):
     thumbnail: Optional[List[str]]
     visibility: bool
 
+class ListUpdate(BaseModel):
+    name: Optional[str]
+    description: Optional[str]
+    likes: Optional[int]
+
 # Comments Schemas
 # TODO: GENERALIZAR PARA DIVERSOS TIPOS DE COMENTARIOS
 class ListComments(BaseModel):

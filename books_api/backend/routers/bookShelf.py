@@ -4,14 +4,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import asyncio
 from backend.schemas import (
     SearchBookSchema, BookSchema, ListCreate, ListPreview, 
-    BookSavedSchema, ListComments, BookComments, ListSchema
+    BookSavedSchema, ListComments, BookComments, ListSchema,
+    ListUpdate
 )
 from backend.auth.auth_handler import get_current_active_user
 from backend.bookShelf.book_handler import search_book_shelf, get_book
 from backend.bookShelf.list_handler import (
     get_list, get_lists_for_user, get_lists_for_book, get_saved_books_for_list,
     create_list, delete_list, add_book_to_list, remove_book_from_list,
-    save_list, get_saved_lists
+    save_list, get_saved_lists, update_list
 )
 from backend.bookShelf.comment_handler import (
     get_comments_for_list, create_comment_on_list, delete_comment_on_list,
@@ -79,6 +80,10 @@ async def create_list_endpoint(list_to_create: ListCreate, user: User = Depends(
 async def delete_list_endpoint(list_id: int, user: User = Depends(get_current_active_user), db: AsyncSession = Depends(get_db)):
     return await handle_request(delete_list, list_id, user, db)
 
+@router.patch("/list/update/{list_id}")
+async def update_list_endpoint(list_id: int, list_update: ListUpdate,user: User = Depends(get_current_active_user),db: AsyncSession = Depends(get_db)):
+    return await handle_request(update_list,list_id,list_update,user,db)
+
 #TODO: verificação de usuário ao alterar uma lista
 @router.post("/list/{list_id}/add")
 async def add_book_to_list_endpoint(list_id: int, book: BookSavedSchema,user: User = Depends(get_current_active_user), db: AsyncSession = Depends(get_db)):
@@ -131,3 +136,5 @@ async def comment_on_book_endpoint(comment: BookComments, db: AsyncSession = Dep
 @router.delete("/comment/book/{book_id}/remove/{comment_id}/user/{user_id}")
 async def delete_comment_on_book_endpoint(book_id: int, comment_id: int, user_id: int, db: AsyncSession = Depends(get_db)): 
     return await handle_request(delete_comment_on_book, book_id, comment_id, user_id, db)
+
+

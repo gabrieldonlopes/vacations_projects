@@ -7,10 +7,11 @@ from sqlalchemy import delete
 
 from backend.database import get_db
 from backend.models import BookList, BookSaved, SavedLists,User
-from backend.schemas import ListSchema, BookSavedSchema, ListCreate, ListPreview, UserResponse
+from backend.schemas import ListSchema, BookSavedSchema, ListCreate, ListPreview, ListUpdate, UserResponse
 
 from ..auth.auth_handler import get_current_active_user
-# TODO: ADICIONAR MENSAGENS EM CASO DE SUCESSO 
+
+#TODO: verificar a existência do usuário
 
 async def verify_owner_user(list: BookList,user: User = Depends(get_current_active_user)):
     if user.user_id != list.owner_user_id:
@@ -164,3 +165,28 @@ async def remove_book_from_list(list_id: int, book_id: str, user: User = Depends
         raise HTTPException(status_code=500, detail=str(e))
     
     return {"message": "Book removed from list successfully"}
+
+async def update_list(list_id: int, list_to_update: ListUpdate,user: User = Depends(get_current_active_user), db: AsyncSession = Depends(get_db)):
+    try:
+        result = await db.execute(select(BookList).filter(BookList.list_id == list_id))
+        list_obj = result.scalars().first()
+        
+        if not list_obj:
+            raise HTTPException(status_code=404, detail="List not found.")  
+        await verify_owner_user(list=list_obj,user=user)
+        
+        if list_to_update.name is not None:
+            list_obj.name = list_to_update.name
+        if list_to_update.description is not None:
+            list_obj.description = list_to_update.description
+        if list_to_update.likes is not None:
+            list_obj.likes = list_to_update.likes
+        
+        await db.commit()
+        await db.refresh(list_obj)
+
+        return {"message": "List updated successfully"}
+            
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
