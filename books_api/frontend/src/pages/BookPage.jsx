@@ -21,7 +21,7 @@ const BookPage = () => {
     const bookData = {
         book_id: String(book?.id || ""),
         book_title: book?.title || "",
-        book_thumbnail: book?.imageLinks_large || "",
+        book_thumbnail: book?.imageLinks_thumbnail || "",
     };
 
     const handleBack = () => {
@@ -89,7 +89,7 @@ const BookPage = () => {
                 <div className="flex flex-col md:flex-row items-start space-y-8 md:space-y-0 md:space-x-8">
                     <div className="md:w-1/3 w-full">
                         <img
-                            src={book.imageLinks_large}
+                            src={book.imageLinks_thumbnail}
                             alt={book.title}
                             className="w-full h-auto rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300"
                         />

@@ -13,11 +13,12 @@ const ProfilePage = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    
     const [createdLists, setCreatedLists] = useState([]);
     const [savedLists, setSavedLists] = useState([]);
     const [savedBooks, setSavedBooks] = useState([]);
 
+    const [sortedThumb,setSortedThumb] = useState([])
     // Função para buscar as listas do usuário
     const fetchLists = async () => {
         try {
@@ -42,6 +43,8 @@ const ProfilePage = () => {
         } else {
             fetchLists();
         }
+        const numeroSorteado = Math.floor(Math.random() *6);
+        setSortedThumb(`./src/assets/toy-story-images/0${numeroSorteado}.jpeg`);
     }, [user, navigate]);
 
     const handleLogout = () => {
@@ -75,7 +78,7 @@ const ProfilePage = () => {
                 <div className="flex flex-col items-center md:flex-row md:items-start">
                     <div className="mb-6 md:mb-0 text-center">
                         <img
-                            src={user.avatar || "./src/assets/owl.jpeg"}
+                            src={user.avatar || sortedThumb}
                             alt={user.username || "User Avatar"}
                             className="w-40 h-40 object-cover rounded-full shadow-md"
                         />
